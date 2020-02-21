@@ -1,8 +1,0 @@
-prefix=/home/master/catkin_ws/install
-
-Name: ursaring
-Description: Description of ursaring
-Version: 0.0.0
-Cflags: 
-Libs: -L${prefix}/lib 
-Requires: 
