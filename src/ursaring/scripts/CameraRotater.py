@@ -11,19 +11,11 @@ import serial
 if __name__ == '__main__':
     	theta = 1 
 	direction = 1 
-<<<<<<< HEAD
-	degree_step = 18 # Degrees per TimeStep 
-	step_ratio = 150.0/180
-	time_per_scan = 1 #Seconds
-    rospy.init_node('my_static_tf2_broadcaster')
-    broadcaster = tf2_ros.TransformBroadcaster()
-=======
 	degree_step = 30
 	step_ratio = 610./180
 	time_per_scan = 2 #Seconds
     	rospy.init_node('my_static_tf2_broadcaster')
     	broadcaster = tf2_ros.TransformBroadcaster()
->>>>>>> f7a7d6c6e1e7e88712751aecf715a95c4462d40a
 	ser = serial.Serial('/dev/ttyACM0', 9600) # Establish the connection on a specific port
 	old = time.time()
 	while not rospy.is_shutdown():
