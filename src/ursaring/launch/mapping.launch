@@ -1,8 +1,8 @@
 <launch>
 <!--Launch Visualization Software-->
 
-<!--Starting the Scanner-->
-<include file="$(find openni_launch)/launch/openni.launch"/>
+<!--Starting t  he Scanner-->
+<include file="$(find freenect_launch)/launch/freenect.launch"/>
 <!--Rotate the LIDAR Platform-->
 <node name="BaseController" pkg="ursaring" type="CameraRotater.py"/>
 

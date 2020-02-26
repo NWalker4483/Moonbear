@@ -1,23 +1,16 @@
 #!/usr/bin/env python
 import rospy
-
-# to get commandline arguments
-import sys
-
 # because of transformations
 import tf
-
 import tf2_ros
-import sys
 import geometry_msgs.msg
-import struct 
 from time import sleep
 import serial
 
 if __name__ == '__main__':
     theta = 1 
 	direction = 1 
-	degree_step = 18
+	degree_step = 18 # Degrees per TimeStep 
 	step_ratio = 150.0/180
 	time_per_scan = 1 #Seconds
     rospy.init_node('my_static_tf2_broadcaster')
