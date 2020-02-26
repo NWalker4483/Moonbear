@@ -5,23 +5,33 @@ import tf
 import tf2_ros
 import geometry_msgs.msg
 from time import sleep
+import time 
 import serial
 
 if __name__ == '__main__':
-    theta = 1 
+    	theta = 1 
 	direction = 1 
+<<<<<<< HEAD
 	degree_step = 18 # Degrees per TimeStep 
 	step_ratio = 150.0/180
 	time_per_scan = 1 #Seconds
     rospy.init_node('my_static_tf2_broadcaster')
     broadcaster = tf2_ros.TransformBroadcaster()
+=======
+	degree_step = 30
+	step_ratio = 610./180
+	time_per_scan = 2 #Seconds
+    	rospy.init_node('my_static_tf2_broadcaster')
+    	broadcaster = tf2_ros.TransformBroadcaster()
+>>>>>>> f7a7d6c6e1e7e88712751aecf715a95c4462d40a
 	ser = serial.Serial('/dev/ttyACM0', 9600) # Establish the connection on a specific port
+	old = time.time()
 	while not rospy.is_shutdown():
 			transformStamped = geometry_msgs.msg.TransformStamped()
 
 			transformStamped.header.stamp = rospy.Time.now()
-			transformStamped.header.frame_id = "map"
-			transformStamped.child_frame_id = "camera_link"
+			transformStamped.header.frame_id = "/map"
+			transformStamped.child_frame_id = "/camera_link"
 
 			transformStamped.transform.translation.x = float(0)
 			transformStamped.transform.translation.y = float(0)
@@ -29,17 +39,17 @@ if __name__ == '__main__':
 			# '23' != str(23)
 			rospy.loginfo("Rotating " + str(int(step_ratio * degree_step * direction)) + " Steps to " + str(theta))
 
+			if time.time() - old > time_per_scan:
+				if 0 < theta < 180:
+					theta += int(degree_step * direction)
+				else:
+					direction = -1 if direction == 1 else 1 
+					theta += int(degree_step * direction)
+				ser.write('T{}'.format(int(step_ratio * degree_step * direction)))
+				old = time.time()
 			
-
-			if 0 < theta < 180:
-				theta += int(degree_step * direction)
-			else:
-				direction = -1 if direction == 1 else 1 
-				theta += int(degree_step * direction)
-			ser.write('{}'.format(int(step_ratio * degree_step * direction)))
-			sleep(time_per_scan)
 			quat = tf.transformations.quaternion_from_euler(
-				   float(0),float(theta),float(0))
+				   float(0),float(0),float(theta))
 			transformStamped.transform.rotation.x = quat[0]
 			transformStamped.transform.rotation.y = quat[1]
 			transformStamped.transform.rotation.z = quat[2]
