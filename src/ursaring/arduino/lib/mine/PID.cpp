@@ -11,13 +11,17 @@
 #define RightEncoderPin      2 // Interrupt Pin
 #define LeftEncoderPin      2 // Interrupt Pin
 #define StatusModePin   8 // Input Pin acting as the dev jumper
+#define PidPlotModePin  9 // Input Pin acting as the dev jumper
 #define SimpleSerialModePin 11 // Input Pin acting as the dev jumper
+/////////////////////////////////////////////////
+#define LoopTime        100   // PID loop time(ms)
+////////////////////////
+float P_GAIN=           0.7;
+float I_GAIN=           0.3;
+float D_GAIN=           0.4;
 /////////////////////////
-#define RightTreadPin   14
-#define LeftTreadPin     0
-// For Motor drivers with mixed mode 
-#define XPin             0
-#define YPin             0
+#define ThrottlePin     14
+#define SteeringPin     0
 /////////////////////////
 #define CRAWL_SPEED     20 // %
 #define MAX_SPEED       30 // %
@@ -25,15 +29,16 @@
 #define PERCENT_100_RPM 25600 // Top Possible RPM of the motor for PID
 #define MIN_PULSE_WIDTH 410 // 410 820 // 10% to 20% Duty Cycle
 #define MAX_PULSE_WIDTH 820
-#define FREQUENCY 106 // Hz 13 kHz
+#define FREQUENCY 106 // Hz
 //////////////////////
+#define    STX          0x02
+#define    ETX          0x03   
 
 #include <ros.h>
 #include <nav_msgs/Odometry.h>
 #include <tf/tf.h>
 #include <tf/transform_broadcaster.h>
 #include <ros/time.h>
-#include <geometry_msgs/Twist.h>
 
 // Physical Properties of the robot
 #define WHEEL_BASE 10 //inches // I forgot Y I did this in inches
@@ -63,14 +68,16 @@ int actual_throttle = 0;
 int goal_throttle = 0;
 int current_steering_angle = 0;
 
-int right_rpm = 0;
+int rpm = 0;
 volatile long right_pulses = 0; // rev counter
-long old_right_pulses = 0;
+long oldright_pulses = 0;
 
-
-int left_rpm = 0;
-volatile long left_pulses = 0; // rev counter
-long old_left_pulses = 0;
+bool Clamped = false;
+int IntegralTerm = 0;
+int DerivativeTerm = 0;
+int PID_Output = 0; 
+int throttleError = 0;
+int lastThrottleError = 0;
 
 ////
 void DriverCallback(const ackermann_msgs::AckermannDriveStamped&);
@@ -113,13 +120,40 @@ void LeftMotorEncoder() { // Counts right_pulses on the  Encoder
   }
 }
 
-
-void set_RightTread(int speed){
+void set_Throttle_Goal(int speed) { // -100 :-: 100
+  speed = constrain(speed, -MAX_SPEED, MAX_SPEED); // Speed Limit
+  goal_throttle = speed;
 }
-void set_LeftTread(int speed){
+
+void set_Throttle(int speed) { // -100 :-: 100
+  speed = constrain(speed, -MAX_SPEED, MAX_SPEED); // Speed Limit
+  if ((speed < 0) && moving_forward){
+    Brake(); 
+  }   
+  if (speed > 0){
+    moving_forward = true;      
+  }
+  current_throttle_setting = speed;
+  speed = map(speed,-100,100,MIN_PULSE_WIDTH,MAX_PULSE_WIDTH);
+  pwm.setPWM(ThrottlePin, 0, speed); 
 }
 
-void DriverCallback(const geometry_msgs::Twist& cmd_msg) {
+void Brake(){ // Disengages the brake on the ESC
+  moving_forward = false; // Set first to prevent recurion 
+  set_Throttle(-20);
+  delay(100);    
+  set_Throttle(0); 
+  delay(100);
+}
+
+void set_Steering(int angle) {
+  angle = constrain(angle, -MAX_STEERING_ANGLE, MAX_STEERING_ANGLE); // Limit angle for safety
+  current_steering_angle = angle;
+  angle = map(angle, -90, 90, MIN_PULSE_WIDTH, MAX_PULSE_WIDTH);
+  pwm.setPWM(SteeringPin, 0, angle);
+}
+
+void DriverCallback(const ackermann_msgs::AckermannDriveStamped& cmd_msg) {
   // Lin -.5:.5  Ang -1.5:1.5
   double linear = cmd_msg.drive.speed;
   double steering_radians = cmd_msg.drive.steering_angle;
@@ -130,6 +164,14 @@ void DriverCallback(const geometry_msgs::Twist& cmd_msg) {
   set_Steering(steering_angle);
   set_Throttle(speed); 
 }
+
+// Bound the input value between x_min and x_max. Also works in anti-windup 
+int CheckClamp(int x) {
+  int speed = constrain(x, -MAX_SPEED, MAX_SPEED); // Speed Limit
+  Clamped = not (speed == x);
+  return speed;
+}
+ 
 int parseIntFast(int numberOfDigits){
   /*
   This function returns the converted integral number as an int value.
@@ -143,18 +185,19 @@ int parseIntFast(int numberOfDigits){
   theNumber = atoi(theNumberString);
   return theNumber;
 }
+
 void ReadSerialCommands(){ // Plot PID Values using Serial Plotter
   if (Serial.available()){
     char cmdByte = Serial.read();
     int setting;
     switch (cmdByte) {
-      case 'T':
+      case 'T': // Change Proportianal Gain
         setting = parseIntFast(4);
         set_Throttle(setting); 
         Serial.print("Set Throttle to ");
         Serial.println(current_throttle_setting); 
         break;
-      case 'S':
+      case 'S': // Change Integral Gain
         setting = parseIntFast(4);
         set_Steering(setting); 
         Serial.print("Set Steering to ");
@@ -164,6 +207,28 @@ void ReadSerialCommands(){ // Plot PID Values using Serial Plotter
   Serial.flush();
   }
 }
+
+void UpdatePIDController(){
+  // compute the error between the measurement and the desired value
+  throttleError = goal_throttle - actual_throttle;
+  DerivativeTerm = throttleError - lastThrottleError;
+  
+  // If the actuator is saturating ignore the integral term
+  // if the system is clamped and the sign of the integrator term and the sign of the PID output are the same
+  if (Clamped and ((PID_Output/abs(PID_Output))==(IntegralTerm/abs(IntegralTerm)))){ 
+    IntegralTerm += 0;
+  } else {
+    IntegralTerm += throttleError;
+  }
+  // compute the control effort by multiplying the error by Kp
+  PID_Output = (throttleError * P_GAIN) + (IntegralTerm * I_GAIN) + (DerivativeTerm * D_GAIN);
+  current_throttle_setting += PID_Output; 
+
+  // make sure the output value is bounded to 0 to 100 using the bound function defined below
+  current_throttle_setting = CheckClamp(current_throttle_setting);
+  set_Throttle(current_throttle_setting); // then write it to the LED pin to change control voltage to LED
+}
+
 void PublishODOM(unsigned long time) {
   double delta_time = double(time)/1000; // must be in seconds
   //compute odometry update values
@@ -199,6 +264,7 @@ void PublishODOM(unsigned long time) {
   odom_pub.publish(&odom_msg);
   nh.spinOnce();
 }
+
 void PublishTransform(){
   geometry_msgs::TransformStamped t;
   
@@ -216,6 +282,29 @@ void PublishTransform(){
   t.header.stamp = current_time;
 
   broadcaster.sendTransform(t);
+}
+
+void SendPlotInfo(){ // Plot PID Values using Serial Plotter
+  if (Serial.available()){
+    byte inByte = Serial.read();
+    switch (inByte) {
+      case 'P': // Change Proportianal Gain
+        P_GAIN = Serial.parseFloat(); break;
+      case 'I': // Change Integral Gain
+        I_GAIN = Serial.parseFloat(); break;
+      case 'D': // Change Derivative Gain
+        D_GAIN = Serial.parseFloat(); break;
+      default:
+        break;
+    }
+  }
+  Serial.print(actual_throttle);
+  Serial.print('\t');
+  // plot the desired output
+  Serial.print(throttleError);
+  Serial.print('\t');
+  // plot the error
+  Serial.println(goal_throttle);
 }
 
 void SendStatusInfo() {// TODO: Printing all this data causes a large delay in the speed updater 
@@ -251,12 +340,17 @@ void Blink(int times){
   
 void CheckModeJumpers(){
   pinMode(StatusModePin, INPUT);
+  pinMode(PidPlotModePin, INPUT);
   pinMode(SimpleSerialModePin, INPUT);
   pinMode(LED_BUILTIN, OUTPUT);
   if (digitalRead(StatusModePin) == HIGH){ // If the dev jumper is connected set dev_mode to true
     Serial.begin(9600);  // For Serial Status Info
     Blink(1);
     mode = 'S';
+  } else if (digitalRead(PidPlotModePin) == HIGH){
+    Serial.begin(9600);  // For Serial Status Info
+    Blink(2);
+    mode = 'P';
   } else if (digitalRead(SimpleSerialModePin) == HIGH){
     Serial.begin(9600); 
     Serial.println("Beginning Simple Serial Mode.");
@@ -289,10 +383,13 @@ void loop() {
   unsigned long time = millis(); // time - lastMilli == time passed
   //OUPUTS
   if(time - lastMilli >= LoopTime)   { // Enter Timed Loop 
-    getMotorData(time - lastMilli);
+    getMotorData(time - lastMilli); //
+    // UpdatePIDController();
     switch (mode) {
       case 'S': // Send Status Info
         SendStatusInfo(); break;
+      case 'P': // Plot/Tune  PID Info
+        SendPlotInfo(); break;
       case 'R': // ROS Mode
         PublishODOM(time - lastMilli); break; // Publish and Restart Loop 
     }
