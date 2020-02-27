@@ -1,45 +1,37 @@
 //////////////////////
 /* 
-~~~~~~~~~~~~~~~~~~~~~/\{ } 
-~~~~~~~  __________,' |\---
-~~~~~~,/                   \
-~~~~~,'      
-~~~~~|   '\      
-~~~~~|    |~~~~~~|   |""
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
-//////////////////////
-#define RightEncoderPin      2 // Interrupt Pin
-#define LeftEncoderPin      2 // Interrupt Pin
-#define StatusModePin   8 // Input Pin acting as the dev jumper
-#define SimpleSerialModePin 11 // Input Pin acting as the dev jumper
-/////////////////////////
-#define RightTreadPin   14
-#define LeftTreadPin     0
+  _      _      _
+>(.)__ <(.)__ =(.)__
+ (___/  (___/  (___/ */
+/////////////////////////////
+#define RightEncoderPinA     2 // Digital Interrupt Pin
+#define RightEncoderPinB     4 // Digital Pin
+#define LeftEncoderPinA      3 // Digital Interrupt Pin
+#define LeftEncoderPinB      5// Digital Pin
+#define StatusModePin        8 // Input Pin acting as a jumper
+#define SimpleSerialModePin  11 // Input Pin acting as a jumper
+/////////////////////////////
+#define RightTreadControlPin 14
+#define LeftTreadControlPin  0
 // For Motor drivers with mixed mode 
-#define XPin             0
-#define YPin             0
-/////////////////////////
-#define CRAWL_SPEED     20 // %
-#define MAX_SPEED       30 // %
-/////////////////////
-#define PERCENT_100_RPM 25600 // Top Possible RPM of the motor for PID
-#define MIN_PULSE_WIDTH 410 // 410 820 // 10% to 20% Duty Cycle
-#define MAX_PULSE_WIDTH 820
-#define FREQUENCY 106 // Hz 13 kHz
-//////////////////////
-
+#define XPin                 0
+#define YPin                 0
+/////////////////////////////
+#define CRAWL_SPEED          20  // %
+#define MAX_SPEED            30 // %
+/////////////////////////////
+// Physical Properties of the robot
+#define WHEEL_BASE           10 //inches // I forgot Y I did this in inches
+#define ENCODER_RESOLUTION   2.5 // right_pulses per revolution
+#define WHEEL_DIAMETER       12 // cm
+#define PI                   3.1415926535897932384626433832795
+/////////////////////////////
 #include <ros.h>
 #include <nav_msgs/Odometry.h>
 #include <tf/tf.h>
 #include <tf/transform_broadcaster.h>
 #include <ros/time.h>
 #include <geometry_msgs/Twist.h>
-
-// Physical Properties of the robot
-#define WHEEL_BASE 10 //inches // I forgot Y I did this in inches
-#define ENCODER_RESOLUTION 2.5 // right_pulses per revolution
-#define WHEEL_DIAMETER     12 // cm
-#define PI 3.1415926535897932384626433832795
 
 //Globals
 unsigned long lastMilli = 0; // time at the end of the last loop 
@@ -55,8 +47,6 @@ double delta_x = 0.0;
 double delta_y = 0.0;
 double linear_velocity = 0.0;
 double angular_velocity = 0.0;
-bool right_moving_forward = false;
-bool left_moving_forward = false;
 
 int current_throttle_setting = 0;
 int actual_throttle = 0;
@@ -64,13 +54,12 @@ int goal_throttle = 0;
 int current_steering_angle = 0;
 
 int right_rpm = 0;
-volatile long right_pulses = 0; // rev counter
-long old_right_pulses = 0;
-
+volatile unsigned long right_pulses = 0; // rev counter
+unsigned long old_right_pulses = 0;
 
 int left_rpm = 0;
-volatile long left_pulses = 0; // rev counter
-long old_left_pulses = 0;
+volatile unsigned long left_pulses = 0; // rev counter
+unsigned long old_left_pulses = 0;
 
 ////
 void DriverCallback(const ackermann_msgs::AckermannDriveStamped&);
@@ -98,18 +87,34 @@ void getMotorData(unsigned long time) {
 }
 
 void RightMotorEncoder() { // Counts right_pulses on the  Encoder
-  if (right_moving_forward) {
-    right_pulses++;
+  if (digitalRead(RightEncoderPinA) == HIGH) {
+    if (digitalRead(RightEncoderPinB) == LOW) {
+      right_pulses++;
+    } else {
+      right_pulses--;
+    }
   } else {
-    right_pulses--;
+    if (digitalRead(RightEncoderPinB) == LOW) {
+      right_pulses--;
+    } else {
+      right_pulses++;
+    }
   }
 }
 
 void LeftMotorEncoder() { // Counts right_pulses on the  Encoder
-  if (left_moving_forward) {
-    left_pulses++;
+ if (digitalRead(LeftEncoderPinA) == HIGH) {
+    if (digitalRead(LeftEncoderPinB) == LOW) {
+      left_pulses++;
+    } else {
+      left_pulses--;
+    }
   } else {
-    left_pulses--;
+    if (digitalRead(LeftEncoderPinB) == LOW) {
+      left_pulses--;
+    } else {
+      left_pulses++;
+    }
   }
 }
 
@@ -275,13 +280,13 @@ void CheckModeJumpers(){
 void setup() {
   CheckModeJumpers();
 
-  pinMode(RightEncoderPin, INPUT); 
-  //digitalPinToInterrupt(EncoderPin)
-  attachInterrupt(0, RightMotorEncoder, RISING); // Trigger RPM counter whenever hall sensor right_pulses
+  pinMode(RightEncoderPinA, INPUT); 
+  pinMode(RightEncoderPinB, INPUT); 
+  attachInterrupt(digitalPinToInterrupt(RightEncoderPinA), RightMotorEncoder, CHANGE); // Trigger RPM counter whenever hall sensor right_pulses
   
-  pinMode(LeftEncoderPin, INPUT); 
-  //digitalPinToInterrupt(EncoderPin)
-  attachInterrupt(0, LeftMotorEncoder, RISING); // Trigger RPM counter whenever hall sensor right_pulses
+  pinMode(LeftEncoderPinA, INPUT); 
+  pinMode(LeftEncoderPinB, INPUT); 
+  attachInterrupt(digitalPinToInterrupt(LeftEncoderPinA),  LeftMotorEncoder, CHANGE); // Trigger RPM counter whenever hall sensor right_pulses
 }
 
 void loop() {
@@ -303,3 +308,4 @@ void loop() {
       ReadSerialCommands(); break;
   }
 }
+///http://andrewjkramer.net/motor-encoders-arduino/
