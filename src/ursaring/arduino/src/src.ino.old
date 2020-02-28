@@ -109,7 +109,7 @@ void DriverCallback(const geometry_msgs::Twist& cmd_msg) {
     analogWrite(LeftTreadControlPin,mapf(cmd_msg.angular.z,-.5,.5,0,1023)); 
   } else {
     Timer1.pwm(RightTreadControlPin, (dutyCycle / 100) * 1023);
-    Timer1.pwm(LeftTreadControlPin, (dutyCycle / 100) * 1023);
+    Timer1.pwm(LeftTreadControlPin,  (dutyCycle / 100) * 1023);
   }
 }
 void ReadSerialCommands(){ // Plot PID Values using Serial Plotter

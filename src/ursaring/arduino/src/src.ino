@@ -48,7 +48,6 @@ volatile unsigned long left_pulses = 0; // rev counter
 unsigned long old_left_pulses = 0;
 
 ros::NodeHandle nh;
-ros::Time current_time;
 
 std_msgs::Int16 left_ticks_msg;
 std_msgs::Int16 right_ticks_msg;
@@ -110,7 +109,6 @@ void DriverCallback(const geometry_msgs::Twist& cmd_msg) {
     Timer1.pwm(LeftTreadControlPin, (dutyCycle / 100) * 1023);
   }
 }
-
 void PublishTICKS(unsigned long time) {
   pub_left_ticks.publish(&left_ticks_msg);
   pub_right_ticks.publish(&right_ticks_msg);
@@ -118,7 +116,6 @@ void PublishTICKS(unsigned long time) {
   left_ticks_msg.data = 0;
   right_ticks_msg.data = 0;
 }
-
 void setup() {
   nh.initNode();
   nh.getHardware()->setBaud(57600); // Ros Node uses 57600 by default
@@ -146,7 +143,6 @@ void setup() {
 void loop() {
   nh.spinOnce();
   unsigned long time = millis(); // time - lastMilli == time passed
-  //OUPUTS
   if(time - lastMilli >= LoopTime)   { // Enter Timed Loop 
     getMotorData(time - lastMilli);
     PublishTICKS(time - lastMilli);// Publish and Restart Loop 
