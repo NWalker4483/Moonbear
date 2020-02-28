@@ -1,9 +1,0 @@
-<launch>
-<node name="joystick" pkg="joy" type="joy_node"/>
-<node name="joystick2cmd" pkg="teleop_twist_joy" type="teleop_node"/>
-<node pkg="rosserial_python" type="serial_node.py" name="arduino">
-    <param name="port" value="/dev/arduino_mega"/>
-    <param name="baud" value="57600"/>
-</node>
-
-</launch>
