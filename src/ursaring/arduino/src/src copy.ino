@@ -8,6 +8,8 @@
 #define RightEncoderPinB     4 // Digital Pin
 #define LeftEncoderPinA      3 // Digital Interrupt Pin
 #define LeftEncoderPinB      5// Digital Pin
+#define StatusModePin        8 // Input Pin acting as a jumper
+#define SimpleSerialModePin  11 // Input Pin acting as a jumpera
 /////////////////////////////
 #define UsingMixedMode       false
 #define RightTreadControlPin A0 // Also acts as X when in mixed mode and throttle when
@@ -110,7 +112,25 @@ void DriverCallback(const geometry_msgs::Twist& cmd_msg) {
     Timer1.pwm(LeftTreadControlPin, (dutyCycle / 100) * 1023);
   }
 }
-
+void ReadSerialCommands(){ // Plot PID Values using Serial Plotter
+  if (Serial.available()){
+    char cmdByte = Serial.read();
+    int setting;
+    switch (cmdByte) {
+      case 'R':
+        setting = parseIntFast(4);
+        Serial.print("Set Right to ");
+        Serial.println(0); 
+        break;
+      case 'L':
+        setting = parseIntFast(4);
+        Serial.print("Set Left to ");
+        Serial.println(0); 
+        break;
+    }
+  Serial.flush();
+  }
+}
 void PublishTICKS(unsigned long time) {
   pub_left_ticks.publish(&left_ticks_msg);
   pub_right_ticks.publish(&right_ticks_msg);
@@ -118,16 +138,45 @@ void PublishTICKS(unsigned long time) {
   left_ticks_msg.data = 0;
   right_ticks_msg.data = 0;
 }
-
+void SendStatusInfo() {// TODO: Printing all this data causes a large delay in the speed updater 
+  Serial.print("THROTTLE SETTING: ");
+  Serial.println(0);
+  Serial.print("STEERING SETTING: ");
+  Serial.println(0);
+  Serial.print("RPM: ");
+  Serial.println(0);
+  Serial.print("TOTAL right_pulses: ");
+  Serial.println(abs(old_right_pulses));  
+  Serial.print("\n");  
+}
+void CheckModeJumpers(){
+  pinMode(StatusModePin, INPUT);
+  pinMode(SimpleSerialModePin, INPUT);
+  pinMode(LED_BUILTIN, OUTPUT);
+  if (digitalRead(StatusModePin) == HIGH){ // If the dev jumper is connected set dev_mode to true
+    Serial.begin(9600);  // For Serial Status Info
+    Blink(1);
+    mode = 'S';
+  } else if (digitalRead(SimpleSerialModePin) == HIGH){
+    Serial.begin(9600); 
+    Serial.println("Beginning Simple Serial Mode.");
+    Blink(4);
+    mode = 'A'; 
+  } else {
+    digitalWrite(LED_BUILTIN, LOW);
+    nh.initNode();
+    nh.getHardware()->setBaud(57600); // Ros Node uses 57600 by default
+    nh.subscribe(drive);
+    nh.advertise(pub_left_ticks);
+    nh.advertise(pub_right_ticks);
+    left_ticks_msg.data = 0;
+    right_ticks_msg.data = 0;
+    mode = 'R';
+  }
+}
 void setup() {
-  nh.initNode();
-  nh.getHardware()->setBaud(57600); // Ros Node uses 57600 by default
-  nh.subscribe(drive);
-  nh.advertise(pub_left_ticks);
-  nh.advertise(pub_right_ticks);
-  left_ticks_msg.data = 0;
-  right_ticks_msg.data = 0;
-  
+  CheckModeJumpers(); // Read the jumpers to determine settings
+
   pinMode(RightTreadControlPin, OUTPUT); 
   pinMode(RightEncoderPinA, INPUT); 
   pinMode(RightEncoderPinB, INPUT); 
@@ -140,18 +189,28 @@ void setup() {
   // digitalPinToInterrupt(LeftEncoderPinA) == 1
   attachInterrupt(1,  LeftEncoderEvent, CHANGE); // Trigger right_rpmcounter whenever hall sensor pulses
 
-  Timer1.initialize(10000);  // 10000 us = 100 Hz
+  Timer1.initialize(40);  // 40 us = 25 kHz
+
 }
 
 void loop() {
-  nh.spinOnce();
+  if(mode=='R'){nh.spinOnce();}
   unsigned long time = millis(); // time - lastMilli == time passed
   //OUPUTS
   if(time - lastMilli >= LoopTime)   { // Enter Timed Loop 
     getMotorData(time - lastMilli);
-    PublishTICKS(time - lastMilli);// Publish and Restart Loop 
+    switch (mode) {
+      case 'S': // Send Status Info
+        SendStatusInfo(); break;
+      case 'R': // ROS Mode
+        PublishTICKS(time - lastMilli); break; // Publish and Restart Loop 
+    }
     lastMilli = time;
+  }  //INPUTS 
+  switch (mode) {
+    case 'A':
+      ReadSerialCommands(); break;
   }
 }
 //https://answers.ros.org/question/73627/how-to-increase-rosserial-buffer-size/
-//http://andrewjkramer.net/motor-encoders-arduino/
+///http://andrewjkramer.net/motor-encoders-arduino/
