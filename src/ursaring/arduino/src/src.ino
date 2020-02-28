@@ -156,6 +156,7 @@ void setup() {
   attachInterrupt(1,  LeftEncoderEvent, CHANGE); // Trigger right_rpmcounter whenever hall sensor pulses
 
   Timer1.initialize(10000);  // 10000 us = 100 Hz
+  set_Throttle(0);
 }
 
 void loop() {
