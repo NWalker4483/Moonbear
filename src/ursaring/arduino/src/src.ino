@@ -10,11 +10,11 @@
 #define LeftEncoderPinB      8 // Digital Pin
 /////////////////////////////
 #define UsingMixedMode       false
-#define RightTreadControlPin 6 // Also acts as X when in mixed mode and throttle when
-#define LeftTreadControlPin  5 // Also acts as Y when in mixed mode and throttle when
+#define RightTreadControlPin 6 // Also acts as X when in mixed mode and throttle when in RC Mode
+#define LeftTreadControlPin  5 // Also acts as Y when in mixed mode and steering when in RC Mode
 /////////////////////////////
 #define CRAWL_SPEED          20  // %
-#define MAX_SPEED            30 // %
+#define MAX_SPEED            36 // %
 /////////////////////////////
 // Physical Properties of the robot
 #define WHEEL_BASE           10 //inches // I forgot Y I did this in inches
@@ -23,7 +23,7 @@
 #define PI                   3.1415926535897932384626433832795
 /////////////////////////////
 #define LoopTime             100
-/////////////////////////////a
+/////////////////////////////
 #include <ros.h>
 #include <ros/time.h>
 
@@ -31,13 +31,41 @@
 #include <geometry_msgs/Twist.h>
 #include <sensor_msgs/Joy.h>
 
-#include <TimerOne.h>
-#include <mine.cpp>
+#include <Servo.h> 
+
+void Blink(int times){
+  while(times<0){
+    digitalWrite(LED_BUILTIN, HIGH); 
+    delay(1000);
+    digitalWrite(LED_BUILTIN, LOW);
+    delay(1000);
+    times-=1; 
+  }
+}
+
+double mapf(double val, double in_min, double in_max, double out_min, double out_max) {
+    return (val - in_min) * (out_max - out_min) / (in_max - in_min) + out_min;
+}
+
+int parseIntFast(int numberOfDigits){
+  /*
+  This function returns the converted integral number as an int value.
+  If no valid conversion could be performed, it returns zero.*/
+  char theNumberString[numberOfDigits + 1];
+  int theNumber;
+  for (int i = 0; i < numberOfDigits; theNumberString[i++] = Serial.read()){
+    delay(5);
+    };
+  theNumberString[numberOfDigits] = 0x00;
+  theNumber = atoi(theNumberString);
+  return theNumber;
+}
 
 //Globals
 unsigned long lastMilli = 0; // time at the end of the last loop 
 byte mode = 'R'; // ROS Mode
 byte ledstatus = LOW;
+boolean moving_forward = false;
 
 int right_rpm= 0;
 volatile unsigned long right_pulses = 0; // rev counter
@@ -99,6 +127,8 @@ void LeftEncoderEvent() { // Counts right_pulses on the  Encoder
     }
   }
 }
+Servo Throttle;
+Servo Steering;
 void Brake(){ // Disengages the brake on the ESC
   moving_forward = false; // Set first to prevent recurion 
   set_Throttle(-20);
@@ -114,8 +144,8 @@ void set_Throttle(int _speed) { // -100 :-: 100
   if (_speed > 0){
     moving_forward = true;      
   }
-  _speed = map(_speed,-100,100,10,20);
-  Timer1.pwm(RightTreadControlPin, (_speed/100.) * 1023);
+  _speed = map(_speed,-100,100,50,140);
+  Throttle.write(_speed);
 }
 void DriverCallback(const geometry_msgs::Twist& cmd_msg) {
   // Lin -.5:.5  Ang -1.5:1.5
@@ -124,7 +154,7 @@ void DriverCallback(const geometry_msgs::Twist& cmd_msg) {
     analogWrite(LeftTreadControlPin,mapf(cmd_msg.angular.z,-.5,.5,0,1023)); 
   } else {
     set_Throttle(mapf(cmd_msg.linear.x,-.5,.5,-100,100));
-    Timer1.pwm(LeftTreadControlPin, mapf(cmd_msg.angular.z,-.5,.5,10,20) * 1023);
+    Steering.write(mapf(cmd_msg.angular.z,-.5,.5,0,180));
   }
 }
 void PublishTICKS(unsigned long time) {
@@ -154,8 +184,9 @@ void setup() {
   pinMode(LeftEncoderPinB, INPUT); 
   // digitalPinToInterrupt(LeftEncoderPinA) == 1
   attachInterrupt(1,  LeftEncoderEvent, CHANGE); // Trigger right_rpmcounter whenever hall sensor pulses
-
-  Timer1.initialize(10000);  // 10000 us = 100 Hz
+  
+  Throttle.attach(RightTreadControlPin);
+  Steering.attach(LeftTreadControlPin);
   set_Throttle(0);
 }
 
