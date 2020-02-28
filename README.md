@@ -12,3 +12,5 @@ sudo apt-get install ros-kinetic-octomap-server
 sudo apt-get install g++-multilib || sudo apt-get --reinstall install libc6 libc6-dev
 
 rosrun camera_calibration cameracalibrator.py --size 8x6 --square 0.108 image:=/my_camera/image camera:=/my_camera
+
+rosrun image_view image_view image:=/usb_cam/image_r _image_transport:=compressed

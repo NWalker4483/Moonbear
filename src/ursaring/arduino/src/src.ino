@@ -144,7 +144,7 @@ void set_Throttle(int _speed) { // -100 :-: 100
   if (_speed > 0){
     moving_forward = true;      
   }
-  _speed = map(_speed,-100,100,50,140);
+  _speed = map(_speed,-100,100,55,145);
   Throttle.write(_speed);
 }
 void DriverCallback(const geometry_msgs::Twist& cmd_msg) {
