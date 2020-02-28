@@ -11,12 +11,9 @@
 #define StatusModePin        8 // Input Pin acting as a jumper
 #define SimpleSerialModePin  11 // Input Pin acting as a jumpera
 /////////////////////////////
-#define UsingMixedMode       true
-#define RightTreadControlPin A0
-#define LeftTreadControlPin  0
-// For Motor drivers with mixed mode 
-#define XPin                 0
-#define YPin                 0
+#define UsingMixedMode       false
+#define RightTreadControlPin A0 // Also acts as X when in mixed mode and throttle when in ackermann mode
+#define LeftTreadControlPin  0 // Also acts as Y when in mixed mode and sterring when in ackermann mode
 /////////////////////////////
 #define CRAWL_SPEED          20  // %
 #define MAX_SPEED            30 // %
@@ -36,6 +33,7 @@
 #include <geometry_msgs/Twist.h>
 #include <sensor_msgs/Joy.h>
 
+#include <TimerOne.h>
 #include <mine.cpp>
 
 //Globals
@@ -104,15 +102,14 @@ void LeftEncoderEvent() { // Counts right_pulses on the  Encoder
     }
   }
 }
-void set_RightTread(int _speed){
-}
-void set_LeftTread(int _speed){
-}
 void DriverCallback(const geometry_msgs::Twist& cmd_msg) {
   // Lin -.5:.5  Ang -1.5:1.5
   if (UsingMixedMode){
     analogWrite(RightTreadControlPin,mapf(cmd_msg.linear.x,-.5,.5,0,1023)); 
     analogWrite(LeftTreadControlPin,mapf(cmd_msg.angular.z,-.5,.5,0,1023)); 
+  } else {
+    Timer1.pwm(RightTreadControlPin, (dutyCycle / 100) * 1023);
+    Timer1.pwm(LeftTreadControlPin, (dutyCycle / 100) * 1023);
   }
 }
 void ReadSerialCommands(){ // Plot PID Values using Serial Plotter
@@ -122,13 +119,11 @@ void ReadSerialCommands(){ // Plot PID Values using Serial Plotter
     switch (cmdByte) {
       case 'R':
         setting = parseIntFast(4);
-        set_RightTread(setting);
         Serial.print("Set Right to ");
         Serial.println(0); 
         break;
       case 'L':
         setting = parseIntFast(4);
-        set_LeftTread(setting); 
         Serial.print("Set Left to ");
         Serial.println(0); 
         break;
@@ -193,6 +188,9 @@ void setup() {
   pinMode(LeftEncoderPinB, INPUT); 
   // digitalPinToInterrupt(LeftEncoderPinA) == 1
   attachInterrupt(1,  LeftEncoderEvent, CHANGE); // Trigger right_rpmcounter whenever hall sensor pulses
+
+  Timer1.initialize(40);  // 40 us = 25 kHz
+
 }
 
 void loop() {
