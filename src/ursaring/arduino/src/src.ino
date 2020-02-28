@@ -99,14 +99,32 @@ void LeftEncoderEvent() { // Counts right_pulses on the  Encoder
     }
   }
 }
+void Brake(){ // Disengages the brake on the ESC
+  moving_forward = false; // Set first to prevent recurion 
+  set_Throttle(-20);
+  delay(100);    
+  set_Throttle(0); 
+  delay(100);
+}
+void set_Throttle(int _speed) { // -100 :-: 100
+  _speed = constrain(_speed, -MAX_SPEED, MAX_SPEED); // Speed Limit
+  if ((_speed < 0) && moving_forward){
+    Brake(); 
+  }   
+  if (_speed > 0){
+    moving_forward = true;      
+  }
+  _speed = map(_speed,-100,100,10,20);
+  Timer1.pwm(RightTreadControlPin, (_speed/100.) * 1023);
+}
 void DriverCallback(const geometry_msgs::Twist& cmd_msg) {
   // Lin -.5:.5  Ang -1.5:1.5
   if (UsingMixedMode){
     analogWrite(RightTreadControlPin,mapf(cmd_msg.linear.x,-.5,.5,0,1023)); 
     analogWrite(LeftTreadControlPin,mapf(cmd_msg.angular.z,-.5,.5,0,1023)); 
   } else {
-    Timer1.pwm(RightTreadControlPin, (dutyCycle / 100) * 1023);
-    Timer1.pwm(LeftTreadControlPin, (dutyCycle / 100) * 1023);
+    set_Throttle(mapf(cmd_msg.linear.x,-.5,.5,-100,100));
+    Timer1.pwm(LeftTreadControlPin, mapf(cmd_msg.angular.z,-.5,.5,10,20) * 1023);
   }
 }
 void PublishTICKS(unsigned long time) {
