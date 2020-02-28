@@ -131,9 +131,9 @@ Servo Throttle;
 Servo Steering;
 void Brake(){ // Disengages the brake on the ESC
   moving_forward = false; // Set first to prevent recurion 
-  set_Throttle(-20);
+  Throttle.write(60);
   delay(100);    
-  set_Throttle(0); 
+  Throttle.write(90); 
   delay(100);
 }
 void set_Throttle(int _speed) { // -100 :-: 100
@@ -187,7 +187,14 @@ void setup() {
   
   Throttle.attach(RightTreadControlPin);
   Steering.attach(LeftTreadControlPin);
-  set_Throttle(0);
+  Throttle.write(90);
+  delay(2000);
+  Throttle.write(0);
+  delay(2000);
+  Throttle.write(180);
+  delay(2000);
+  Throttle.write(90);
+  delay(2000);
 }
 
 void loop() {
