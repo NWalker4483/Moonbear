@@ -5,13 +5,13 @@
  (___/  (___/  (___/ */
 /////////////////////////////
 #define RightEncoderPinA     2 // Digital Interrupt Pin
-#define RightEncoderPinB     4 // Digital Pin
+#define RightEncoderPinB     7 // Digital Pin
 #define LeftEncoderPinA      3 // Digital Interrupt Pin
-#define LeftEncoderPinB      5// Digital Pin
+#define LeftEncoderPinB      8 // Digital Pin
 /////////////////////////////
 #define UsingMixedMode       false
-#define RightTreadControlPin A0 // Also acts as X when in mixed mode and throttle when
-#define LeftTreadControlPin  0
+#define RightTreadControlPin 6 // Also acts as X when in mixed mode and throttle when
+#define LeftTreadControlPin  5 // Also acts as Y when in mixed mode and throttle when
 /////////////////////////////
 #define CRAWL_SPEED          20  // %
 #define MAX_SPEED            30 // %
