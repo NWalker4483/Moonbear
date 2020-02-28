@@ -36,6 +36,8 @@
 #include <geometry_msgs/Twist.h>
 #include <sensor_msgs/Joy.h>
 
+#include <mine.cpp>
+
 //Globals
 unsigned long lastMilli = 0; // time at the end of the last loop 
 byte mode = 'R'; // ROS Mode
@@ -72,8 +74,7 @@ void getMotorData(unsigned long time) {
   left_ticks_msg.data += left_pulses - old_left_pulses;
   old_left_pulses = left_pulses;
 }
-
-void RightMotorEncoder() { // Counts right_pulses on the  Encoder
+void RightEncoderEvent() { // Counts right_pulses on the  Encoder
   if (digitalRead(RightEncoderPinA) == HIGH) {
     if (digitalRead(RightEncoderPinB) == LOW) {
       right_pulses++;
@@ -88,8 +89,7 @@ void RightMotorEncoder() { // Counts right_pulses on the  Encoder
     }
   }
 }
-
-void LeftMotorEncoder() { // Counts right_pulses on the  Encoder
+void LeftEncoderEvent() { // Counts right_pulses on the  Encoder
  if (digitalRead(LeftEncoderPinA) == HIGH) {
     if (digitalRead(LeftEncoderPinB) == LOW) {
       left_pulses++;
@@ -104,32 +104,16 @@ void LeftMotorEncoder() { // Counts right_pulses on the  Encoder
     }
   }
 }
-
-
 void set_RightTread(int _speed){
 }
 void set_LeftTread(int _speed){
 }
-
 void DriverCallback(const geometry_msgs::Twist& cmd_msg) {
   // Lin -.5:.5  Ang -1.5:1.5
   if (UsingMixedMode){
     analogWrite(RightTreadControlPin,mapf(cmd_msg.linear.x,-.5,.5,0,1023)); 
     analogWrite(LeftTreadControlPin,mapf(cmd_msg.angular.z,-.5,.5,0,1023)); 
   }
-}
-int parseIntFast(int numberOfDigits){
-  /*
-  This function returns the converted integral number as an int value.
-  If no valid conversion could be performed, it returns zero.*/
-  char theNumberString[numberOfDigits + 1];
-  int theNumber;
-  for (int i = 0; i < numberOfDigits; theNumberString[i++] = Serial.read()){
-    delay(5);
-    };
-  theNumberString[numberOfDigits] = 0x00;
-  theNumber = atoi(theNumberString);
-  return theNumber;
 }
 void ReadSerialCommands(){ // Plot PID Values using Serial Plotter
   if (Serial.available()){
@@ -159,7 +143,6 @@ void PublishTICKS(unsigned long time) {
   left_ticks_msg.data = 0;
   right_ticks_msg.data = 0;
 }
-
 void SendStatusInfo() {// TODO: Printing all this data causes a large delay in the speed updater 
   Serial.print("THROTTLE SETTING: ");
   Serial.println(0);
@@ -167,34 +150,10 @@ void SendStatusInfo() {// TODO: Printing all this data causes a large delay in t
   Serial.println(0);
   Serial.print("RPM: ");
   Serial.println(0);
-  /*
-  Serial.print("LINEAR VELOCITY: ");
-  Serial.print(linear_velocity);
-  Serial.println(" m/s");
-  Serial.print("ANGULAR VELOCITY: ");
-  Serial.print(angular_velocity);
-  Serial.println(" m/s");  
-  Serial.print("right_pulses SINCE LAST UPDATE: ");
-  Serial.println(right_pulses);*/
   Serial.print("TOTAL right_pulses: ");
   Serial.println(abs(old_right_pulses));  
   Serial.print("\n");  
 }
-
-void Blink(int times){
-  while(times<0){
-    digitalWrite(LED_BUILTIN, HIGH); 
-    delay(1000);
-    digitalWrite(LED_BUILTIN, LOW);
-    delay(1000);
-    times-=1; 
-  }
-}
-
-double mapf(double val, double in_min, double in_max, double out_min, double out_max) {
-    return (val - in_min) * (out_max - out_min) / (in_max - in_min) + out_min;
-}
-
 void CheckModeJumpers(){
   pinMode(StatusModePin, INPUT);
   pinMode(SimpleSerialModePin, INPUT);
@@ -220,7 +179,6 @@ void CheckModeJumpers(){
     mode = 'R';
   }
 }
-
 void setup() {
   CheckModeJumpers(); // Read the jumpers to determine settings
 
@@ -228,17 +186,16 @@ void setup() {
   pinMode(RightEncoderPinA, INPUT); 
   pinMode(RightEncoderPinB, INPUT); 
   // digitalPinToInterrupt(RightEncoderPinA) == 0
-  attachInterrupt(0, RightMotorEncoder, CHANGE); // Trigger right_rpmcounter whenever hall sensor pulses
+  attachInterrupt(0, RightEncoderEvent, CHANGE); // Trigger right_rpmcounter whenever hall sensor pulses
   
   pinMode(LeftTreadControlPin, OUTPUT);
   pinMode(LeftEncoderPinA, INPUT); 
   pinMode(LeftEncoderPinB, INPUT); 
   // digitalPinToInterrupt(LeftEncoderPinA) == 1
-  attachInterrupt(1,  LeftMotorEncoder, CHANGE); // Trigger right_rpmcounter whenever hall sensor pulses
+  attachInterrupt(1,  LeftEncoderEvent, CHANGE); // Trigger right_rpmcounter whenever hall sensor pulses
 }
 
 void loop() {
-  mode = 'R';
   if(mode=='R'){nh.spinOnce();}
   unsigned long time = millis(); // time - lastMilli == time passed
   //OUPUTS
