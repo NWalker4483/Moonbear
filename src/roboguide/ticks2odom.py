@@ -13,6 +13,7 @@ def convert_trans_rot_vel_to_steering_angle(v, omega, wheelbase):
 
 def tck_callback(data):
 	delta_time = rospy.Time.now() - last_msg // seconds
+"""
 	#basic velocity inputs
 	propel = 0.0; //m/s from rear wheels
 	steer_angle = a; //radians
@@ -36,7 +37,17 @@ def tck_callback(data):
 	odomMsg.pose.pose.orientation.z = v_th
 	odomMsg.header.frame_id = 'odom'
 	odomMsg.child_frame_id = 'base_footprint'
-	
+"""
+	wheelBase=1.68
+	speed= (vR + vL) / 2.0 # m/s 
+	v_th=speed*tan(wheelAngle)/ wheelBase
+	vx = speed
+	vy = 0.0
+	odomMsg.twist.twist.linear.x = vx
+	odomMsg.twist.twist.linear.y = vy
+	odomMsg.twist.twist.angular.z = v_th
+	odomMsg.header.frame_id = 'odom'
+	odomMsg.child_frame_id = 'base_footprint'
 	pub.publish(odomMsg)
 
 def cmd_callback(data):
