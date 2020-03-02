@@ -11,4 +11,5 @@
     <param name="camera_frame_id" value="usb_cam" />
     <param name="io_method" value="mmap"/>
 </node>
+<node pkg="" type="" name=""/>
 </launch>

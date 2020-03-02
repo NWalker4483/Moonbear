@@ -4,14 +4,11 @@
 >(.)__ <(.)__ =(.)__
  (___/  (___/  (___/ */
 /////////////////////////////
-#define RightEncoderPinA     2 // Digital Interrupt Pin
-#define RightEncoderPinB     7 // Digital Pin
-#define LeftEncoderPinA      3 // Digital Interrupt Pin
-#define LeftEncoderPinB      8 // Digital Pin
+#define EncoderPin           2 // Digital Interrupt Pin
 /////////////////////////////
 #define UsingMixedMode       false
-#define RightTreadControlPin 6 // Also acts as X when in mixed mode and throttle when in RC Mode
-#define LeftTreadControlPin  5 // Also acts as Y when in mixed mode and steering when in RC Mode
+#define ThrottleControlPin   6 // Also acts as X when in mixed mode and throttle when in RC Mode
+#define SteeringControlPin   5 // Also acts as Y when in mixed mode and steering when in RC Mode
 /////////////////////////////
 #define CRAWL_SPEED          20  // %
 #define MAX_SPEED            36 // %
@@ -68,8 +65,8 @@ byte ledstatus = LOW;
 boolean moving_forward = false;
 
 int right_rpm= 0;
-volatile unsigned long right_pulses = 0; // rev counter
-unsigned long old_right_pulses = 0;
+volatile unsigned long pulses = 0; // rev counter
+unsigned long old_pulses = 0;
 
 int left_rpm= 0;
 volatile unsigned long left_pulses = 0; // rev counter
@@ -77,10 +74,10 @@ unsigned long old_left_pulses = 0;
 
 ros::NodeHandle nh;
 
-std_msgs::Int16 left_ticks_msg;
+std_msgs::Int16 ticks_msg;
 std_msgs::Int16 right_ticks_msg;
 
-ros::Publisher pub_left_ticks("/left_ticks",&left_ticks_msg);
+ros::Publisher pub_left_ticks("/ticks",&ticks_msg);
 ros::Publisher pub_right_ticks("/right_ticks",&right_ticks_msg);
 
 void DriverCallback(const geometry_msgs::Twist&);
@@ -94,10 +91,10 @@ void getMotorData(unsigned long time) {
   old_right_pulses = right_pulses;
   
   left_rpm = (60*(double(left_pulses-old_left_pulses)/ENCODER_RESOLUTION))/delta_time; // 60 is to convert from seconds to minutes
-  left_ticks_msg.data += left_pulses - old_left_pulses;
+  ticks_msg.data += left_pulses - old_left_pulses;
   old_left_pulses = left_pulses;
 }
-void RightEncoderEvent() { // Counts right_pulses on the  Encoder
+void EncoderEvent() { // Counts right_pulses on the  Encoder
   if (digitalRead(RightEncoderPinA) == HIGH) {
     if (digitalRead(RightEncoderPinB) == LOW) {
       right_pulses++;
@@ -109,21 +106,6 @@ void RightEncoderEvent() { // Counts right_pulses on the  Encoder
       right_pulses--;
     } else {
       right_pulses++;
-    }
-  }
-}
-void LeftEncoderEvent() { // Counts right_pulses on the  Encoder
- if (digitalRead(LeftEncoderPinA) == HIGH) {
-    if (digitalRead(LeftEncoderPinB) == LOW) {
-      left_pulses++;
-    } else {
-      left_pulses--;
-    }
-  } else {
-    if (digitalRead(LeftEncoderPinB) == LOW) {
-      left_pulses--;
-    } else {
-      left_pulses++;
     }
   }
 }
@@ -158,35 +140,24 @@ void DriverCallback(const geometry_msgs::Twist& cmd_msg) {
   }
 }
 void PublishTICKS(unsigned long time) {
-  pub_left_ticks.publish(&left_ticks_msg);
-  pub_right_ticks.publish(&right_ticks_msg);
-  
-  left_ticks_msg.data = 0;
-  right_ticks_msg.data = 0;
+  pub_ticks.publish(&ticks_msg);
+  ticks_msg.data = 0;
 }
 void setup() {
   nh.initNode();
   nh.getHardware()->setBaud(57600); // Ros Node uses 57600 by default
   nh.subscribe(drive);
-  nh.advertise(pub_left_ticks);
-  nh.advertise(pub_right_ticks);
-  left_ticks_msg.data = 0;
-  right_ticks_msg.data = 0;
+  nh.advertise(pub_ticks);
+  ticks_msg.data = 0;
   
-  pinMode(RightTreadControlPin, OUTPUT); 
-  pinMode(RightEncoderPinA, INPUT); 
-  pinMode(RightEncoderPinB, INPUT); 
+  pinMode(ThrottleControlPin, OUTPUT); 
+  pinMode(EncoderPin, INPUT); 
   // digitalPinToInterrupt(RightEncoderPinA) == 0
-  attachInterrupt(0, RightEncoderEvent, CHANGE); // Trigger right_rpmcounter whenever hall sensor pulses
+  attachInterrupt(0, EncoderEvent, FALLING); // Trigger right_rpmcounter whenever hall sensor pulses
   
-  pinMode(LeftTreadControlPin, OUTPUT);
-  pinMode(LeftEncoderPinA, INPUT); 
-  pinMode(LeftEncoderPinB, INPUT); 
-  // digitalPinToInterrupt(LeftEncoderPinA) == 1
-  attachInterrupt(1,  LeftEncoderEvent, CHANGE); // Trigger right_rpmcounter whenever hall sensor pulses
+  Throttle.attach(ThrottleControlPin);
+  Steering.attach(SteeringControlPin);
   
-  Throttle.attach(RightTreadControlPin);
-  Steering.attach(LeftTreadControlPin);
   Throttle.write(90);
   delay(2000);
   Throttle.write(0);
