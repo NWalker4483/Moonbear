@@ -3,6 +3,7 @@
     <param name="port" value="/dev/ttyACM0"/>
     <param name="baud" value="57600"/>
 </node>
+<!--
 <node name="usb_cam" pkg="usb_cam" type="usb_cam_node">
     <param name="video_device" value="/dev/video0" />
     <param name="image_width" value="640" />
@@ -10,7 +11,46 @@
     <param name="pixel_format" value="yuyv" />
     <param name="camera_frame_id" value="usb_cam" />
     <param name="io_method" value="mmap"/>
-</node>
+</node>-->
+<node pkg="rplidar_ros" type="rplidarNode" name="scanner"/>
 <node pkg="roboguide" type="ticks2odom.py" name="base_odom_node"/>
-<node pkg="roboguide" type="cmd2ack.py" name="twist2ackermann"/>
+<node pkg="roboguide" type="cmd2ack.py" name="twist2ackermann"/> 
+<node pkg="tf" type="static_transform_publisher" name="scan_base_link" args="0 0 0 0 0 0 /base_link /laser_frame 100"/> 
+
+ <node pkg="gmapping" type="slam_gmapping" name="slam_gmapping" output="screen">
+        <!--remap from="scan" to="base_scan"/-->
+        <param name="base_frame" value="/base_link" />
+        <param name="odom_frame" value="/odom" />
+        <param name="map_update_interval" value="0.5"/>
+        <param name="maxUrange" value="4.5"/>
+        <!--param name="maxRange" value="4.0"/-->
+        <param name="sigma" value="0.05"/>
+        <param name="kernelSize" value="1"/>
+        <param name="lstep" value="0.05"/>
+        <param name="astep" value="0.05"/>
+        <param name="iterations" value="5"/>
+        <param name="lsigma" value="0.075"/>
+        <param name="ogain" value="3.0"/>
+        <param name="lskip" value="0"/>
+        <param name="minimumScore" value="100"/>
+        <param name="srr" value="0.01"/>
+        <param name="srt" value="0.02"/>
+        <param name="str" value="0.01"/>
+        <param name="stt" value="0.02"/>
+        <param name="linearUpdate" value="0.4"/>
+        <param name="angularUpdate" value="0.4"/>
+        <param name="temporalUpdate" value="-1.0"/>
+        <param name="resampleThreshold" value="0.5"/>
+        <param name="particles" value="80"/>
+        <param name="xmin" value="-50.0"/>
+        <param name="ymin" value="-50.0"/>
+        <param name="xmax" value="50.0"/>
+        <param name="ymax" value="50.0"/>
+        <param name="delta" value="0.05"/>
+        <param name="llsamplerange" value="0.01"/>
+        <param name="llsamplestep" value="0.01"/>
+        <param name="lasamplerange" value="0.005"/>
+        <param name="lasamplestep" value="0.005"/>
+        <param name="transform_publish_period" value="0.1"/>
+    </node>
 </launch>

@@ -1,21 +1,19 @@
 #!/usr/bin/env python
-import rospy, math
+import rospy
 from geometry_msgs.msg import Twist
 from std_msgs.msg import Int16
 from nav_msgs.msg import Odometry
-
-from geometry_msgs.msg import Point, Pose, Quaternion, Twist, Vector3
+import tf
+from geometry_msgs.msg import Point, Pose, Quaternion#, Vector3
 
 from ackermann_msgs.msg import AckermannDriveStamped
 from numpy import sin, cos, tan
 
 def tck_callback(data):
-    """
-	global wheelbase
-	global steering_angle
 	global last_time
-	global pub
-	"""
+	global x_
+	global y_
+	global yaw_
 
 	current_time = rospy.Time.now()
 	delta_time = (current_time - last_time).to_sec() # seconds
@@ -41,19 +39,19 @@ def tck_callback(data):
 	
 	odom_quat = tf.transformations.quaternion_from_euler(0, 0, yaw_)
 
-     # first, we'll publish the transform over tf
-    odom_broadcaster.sendTransform(
-        (x_, y_, 0.),
-        odom_quat,
-        current_time,
-        "base_link",
-     	"odom"
-    )
+        # first, we'll publish the transform over tf
+        odom_broadcaster.sendTransform(
+		(x_, y_, 0.),
+		odom_quat,
+		current_time,
+		"base_link",
+	     	"odom"
+        )
 
 	#now update our pose estimate
 	odom = Odometry()
  	odom.header.stamp = current_time
-    odom.header.frame_id = "odom"
+        odom.header.frame_id = "odom"
 	odom.pose.pose = Pose(Point(x_, y_, 0.), Quaternion(*odom_quat))
 
 	# Co variance should be cacluated empirically
@@ -75,21 +73,23 @@ def cmd_callback(data):
 if __name__ == '__main__': 
   try:    
     
-    rospy.init_node('cmd_vel_to_ackermann_drive')
+    rospy.init_node('ticks_to_odom')
     odom_broadcaster = tf.TransformBroadcaster()
     last_time = rospy.Time.now()
     current_speed = 0 
+    steering_angle = 0
     x_ = 0
     y_ = 0
     yaw_ = 0
     
     # twist_cmd_topic = rospy.get_param('~twist_cmd_topic', '/cmd_vel') 
     # ackermann_cmd_topic = rospy.get_param('~ackermann_cmd_topic', '/ackermann_cmd')
-    wheelbase = rospy.get_param('~wheelbase', 10.0)
     # frame_id = rospy.get_param('~frame_id', 'odom')
+
+    wheelbase = rospy.get_param('~wheelbase', 10.0)
     
-    rospy.Subscriber("/ackermann_cmd", Twist, cmd_callback, queue_size=1)
-    rospy.Subscriber("/ticks", Int16, tck_callback, queue_size=1)
+    rospy.Subscriber("/ackermann_cmd", AckermannDriveStamped, cmd_callback) #, queue_size=1)
+    rospy.Subscriber("/ticks", Int16, tck_callback) #, queue_size=1)
     pub = rospy.Publisher("odom", Odometry, queue_size=5)
 
     rospy.spin()

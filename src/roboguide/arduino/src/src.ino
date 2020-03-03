@@ -64,20 +64,16 @@ byte mode = 'R'; // ROS Mode
 byte ledstatus = LOW;
 boolean moving_forward = false;
 
-int right_rpm= 0;
+int rpm= 0;
 volatile unsigned long pulses = 0; // rev counter
 unsigned long old_pulses = 0;
-
-int left_rpm= 0;
-volatile unsigned long left_pulses = 0; // rev counter
-unsigned long old_left_pulses = 0;
 
 ros::NodeHandle nh;
 
 std_msgs::Int16 ticks_msg;
 std_msgs::Int16 right_ticks_msg;
 
-ros::Publisher pub_left_ticks("/ticks",&ticks_msg);
+ros::Publisher pub_ticks("/ticks",&ticks_msg);
 ros::Publisher pub_right_ticks("/right_ticks",&right_ticks_msg);
 
 void DriverCallback(const geometry_msgs::Twist&);
@@ -86,30 +82,20 @@ ros::Subscriber<geometry_msgs::Twist> drive("cmd_vel", &DriverCallback);
 void getMotorData(unsigned long time) {
   double delta_time = double(time)/1000; // must be in seconds for these formulas 
   
-  right_rpm = (60*(double(right_pulses-old_right_pulses)/ENCODER_RESOLUTION))/delta_time; // 60 is to convert from seconds to minutes
-  right_ticks_msg.data += right_pulses - old_right_pulses;
-  old_right_pulses = right_pulses;
-  
-  left_rpm = (60*(double(left_pulses-old_left_pulses)/ENCODER_RESOLUTION))/delta_time; // 60 is to convert from seconds to minutes
-  ticks_msg.data += left_pulses - old_left_pulses;
-  old_left_pulses = left_pulses;
+  rpm = (60*(double(pulses - old_pulses)/ENCODER_RESOLUTION))/delta_time; // 60 is to convert from seconds to minutes
+  ticks_msg.data += pulses - old_pulses;
+  old_left_pulses = pulses;
 }
 void EncoderEvent() { // Counts right_pulses on the  Encoder
-  if (digitalRead(RightEncoderPinA) == HIGH) {
-    if (digitalRead(RightEncoderPinB) == LOW) {
+  if (digitalRead(EncoderPin) == LOW) {
+    if (moving_forward){
       right_pulses++;
     } else {
       right_pulses--;
-    }
-  } else {
-    if (digitalRead(RightEncoderPinB) == LOW) {
-      right_pulses--;
-    } else {
-      right_pulses++;
     }
   }
 }
-Servo Throttle;
+ Servo Throttle;
 Servo Steering;
 void Brake(){ // Disengages the brake on the ESC
   moving_forward = false; // Set first to prevent recurion 
@@ -131,13 +117,9 @@ void set_Throttle(int _speed) { // -100 :-: 100
 }
 void DriverCallback(const geometry_msgs::Twist& cmd_msg) {
   // Lin -.5:.5  Ang -1.5:1.5
-  if (UsingMixedMode){
-    analogWrite(RightTreadControlPin,mapf(cmd_msg.linear.x,-.5,.5,0,1023)); 
-    analogWrite(LeftTreadControlPin,mapf(cmd_msg.angular.z,-.5,.5,0,1023)); 
-  } else {
+  
     set_Throttle(mapf(cmd_msg.linear.x,-.5,.5,-100,100));
     Steering.write(mapf(cmd_msg.angular.z,-.5,.5,0,180));
-  }
 }
 void PublishTICKS(unsigned long time) {
   pub_ticks.publish(&ticks_msg);
