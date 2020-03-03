@@ -4,7 +4,7 @@ from geometry_msgs.msg import Twist
 from std_msgs.msg import Int16
 from nav_msgs.msg import Odometry
 import tf
-from geometry_msgs.msg import Point, Pose, Quaternion#, Vector3
+from geometry_msgs.msg import Point, Pose, Quaternion, Vector3
 
 from ackermann_msgs.msg import AckermannDriveStamped
 from numpy import sin, cos, tan
@@ -20,7 +20,7 @@ def tck_callback(data):
 
 	#basic velocity inputs
 	ticks = data.data
-	current_speed = 0.0; #m/s from rear wheels
+	current_speed = .005; #m/s from rear wheels
 
 	#compute odometry values from joint angles
 	#and get the theta update
