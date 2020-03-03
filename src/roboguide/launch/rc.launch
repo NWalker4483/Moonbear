@@ -11,5 +11,6 @@
     <param name="camera_frame_id" value="usb_cam" />
     <param name="io_method" value="mmap"/>
 </node>
-<node pkg="" type="" name=""/>
+<node pkg="roboguide" type="ticks2odom.py" name="base_odom_node"/>
+<node pkg="roboguide" type="cmd2ack.py" name="twist2ackermann"/>
 </launch>
