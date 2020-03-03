@@ -20,7 +20,7 @@ def tck_callback(data):
 
 	#basic velocity inputs
 	ticks = data.data
-	current_speed = .005; #m/s from rear wheels
+	current_speed = .05; #m/s from rear wheels
 
 	#compute odometry values from joint angles
 	#and get the theta update
