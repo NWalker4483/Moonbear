@@ -15,9 +15,13 @@
 /////////////////////////////
 // Physical Properties of the robot
 #define WHEEL_BASE           10 //inches // I forgot Y I did this in inches
-#define ENCODER_RESOLUTION   2.5 // right_pulses per revolution
+#define ENCODER_RESOLUTION   3 // right_pulses per revolution
 #define WHEEL_DIAMETER       12 // cm
 #define PI                   3.1415926535897932384626433832795
+/////////////////////////////
+float P_GAIN=           0.7;
+float I_GAIN=           0.3;
+float D_GAIN=           0.4;
 /////////////////////////////
 #define LoopTime             100
 /////////////////////////////
@@ -29,6 +33,36 @@
 #include <sensor_msgs/Joy.h>
 
 #include <Servo.h> 
+// Bound the input value between x_min and x_max. Also works in anti-windup 
+int CheckClamp(int x) {
+  int speed = constrain(x, -MAX_SPEED, MAX_SPEED); // Speed Limit
+  Clamped = not (speed == x);
+  return speed;
+}
+ void set_Throttle_Goal(int speed) { // -100 :-: 100
+  speed = constrain(speed, -MAX_SPEED, MAX_SPEED); // Speed Limit
+  goal_throttle = speed;
+}
+void UpdatePIDController(){
+  // compute the error between the measurement and the desired value
+  throttleError = goal_throttle - actual_throttle;
+  DerivativeTerm = throttleError - lastThrottleError;
+  
+  // If the actuator is saturating ignore the integral term
+  // if the system is clamped and the sign of the integrator term and the sign of the PID output are the same
+  if (Clamped and ((PID_Output/abs(PID_Output))==(IntegralTerm/abs(IntegralTerm)))){ 
+    IntegralTerm += 0;
+  } else {
+    IntegralTerm += throttleError;
+  }
+  // compute the control effort by multiplying the error by Kp
+  PID_Output = (throttleError * P_GAIN) + (IntegralTerm * I_GAIN) + (DerivativeTerm * D_GAIN);
+  current_throttle_setting += PID_Output; 
+
+  // make sure the output value is bounded to 0 to 100 using the bound function defined below
+  current_throttle_setting = CheckClamp(current_throttle_setting);
+  set_Throttle(current_throttle_setting); // then write it to the LED pin to change control voltage to LED
+}
 
 void Blink(int times){
   while(times<0){
@@ -67,6 +101,13 @@ boolean moving_forward = false;
 int rpm= 0;
 volatile unsigned long pulses = 0; // rev counter
 unsigned long old_pulses = 0;
+
+bool Clamped = false;
+int IntegralTerm = 0;
+int DerivativeTerm = 0;
+int PID_Output = 0; 
+int throttleError = 0;
+int lastThrottleError = 0;
 
 ros::NodeHandle nh;
 
