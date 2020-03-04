@@ -15,12 +15,12 @@ def tck_callback(data):
 	global y_
 	global yaw_
 
-	current_time = rospy.Time.now()
+	current_time = data.header.stamp
 	delta_time = (current_time - last_time).to_sec() # seconds
 
 	#basic velocity inputs
-	ticks = data.data
-	current_speed = .05; #m/s from rear wheels
+	current_speed = data.drive.speed #m/s from rear wheels
+	steering_angle = data.drive.steering_angle #radians
 
 	#compute odometry values from joint angles
 	#and get the theta update
@@ -29,7 +29,6 @@ def tck_callback(data):
 	#compute odometry update values
 	delta_x = current_speed * cos(yaw_)
 	delta_y = current_speed * sin(yaw_)
-	
 
 	#now update our pose estimate
 	x_ += delta_x * delta_time
@@ -39,19 +38,19 @@ def tck_callback(data):
 	
 	odom_quat = tf.transformations.quaternion_from_euler(0, 0, yaw_)
 
-        # first, we'll publish the transform over tf
-        odom_broadcaster.sendTransform(
+	# first, we'll publish the transform over tf
+	odom_broadcaster.sendTransform(
 		(x_, y_, 0.),
 		odom_quat,
 		current_time,
 		"base_link",
-	     	"odom"
-        )
+		"odom"
+	)
 
 	#now update our pose estimate
 	odom = Odometry()
  	odom.header.stamp = current_time
-        odom.header.frame_id = "odom"
+    odom.header.frame_id = "odom"
 	odom.pose.pose = Pose(Point(x_, y_, 0.), Quaternion(*odom_quat))
 
 	# Co variance should be cacluated empirically
@@ -61,23 +60,15 @@ def tck_callback(data):
 
 	# Set Velocity
 	odom.child_frame_id = 'base_link'
-        odom.twist.twist = Twist(Vector3(current_speed, 0, 0), Vector3(0, 0, angular_velocity))
-
+    odom.twist.twist = Twist(Vector3(current_speed, 0, 0), Vector3(0, 0, angular_velocity))
 	pub.publish(odom)
 	last_time = current_time
 
-def cmd_callback(data):
-  global steering_angle
-  steering_angle = data.steering_angle #radians
-  
 if __name__ == '__main__': 
   try:    
-    
-    rospy.init_node('ticks_to_odom')
+    rospy.init_node('rc_odom_node')
     odom_broadcaster = tf.TransformBroadcaster()
     last_time = rospy.Time.now()
-    current_speed = 0 
-    steering_angle = 0
     x_ = 0
     y_ = 0
     yaw_ = 0
@@ -88,8 +79,7 @@ if __name__ == '__main__':
 
     wheelbase = rospy.get_param('~wheelbase', 10.0)
     
-    rospy.Subscriber("/ackermann_cmd", AckermannDriveStamped, cmd_callback) #, queue_size=1)
-    rospy.Subscriber("/ticks", Int16, tck_callback) #, queue_size=1)
+    rospy.Subscriber("/rc_state", AckermannDriveStamped, tck_callback) #, queue_size=1)
     pub = rospy.Publisher("odom", Odometry, queue_size=5)
 
     rospy.spin()

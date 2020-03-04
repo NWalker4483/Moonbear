@@ -4,26 +4,26 @@
 >(.)__ <(.)__ =(.)__
  (___/  (___/  (___/ */
 /////////////////////////////
-#define EncoderPin           2 // Digital Interrupt Pin
+#define EncoderPin 2 // Digital Interrupt Pin
 /////////////////////////////
-#define UsingMixedMode       false
-#define ThrottleControlPin   6 // Also acts as X when in mixed mode and throttle when in RC Mode
-#define SteeringControlPin   5 // Also acts as Y when in mixed mode and steering when in RC Mode
+#define UsingMixedMode false
+#define ThrottleControlPin 6 // Also acts as X when in mixed mode and throttle when in RC Mode
+#define SteeringControlPin 5 // Also acts as Y when in mixed mode and steering when in RC Mode
 /////////////////////////////
-#define CRAWL_SPEED          20  // %
-#define MAX_SPEED            36 // %
+#define CRAWL_SPEED 20 // %
+#define MAX_SPEED 36   // %
 /////////////////////////////
 // Physical Properties of the robot
-#define WHEEL_BASE           10 //inches // I forgot Y I did this in inches
-#define ENCODER_RESOLUTION   3 // pulses per revolution
-#define WHEEL_DIAMETER       12 // cm
-#define PI                   3.1415926535897932384626433832795
+#define WHEEL_BASE 10        //inches // I forgot Y I did this in inches
+#define ENCODER_RESOLUTION 9 // pulses per revolution
+#define WHEEL_DIAMETER .12    // m
+#define PI 3.1415926535897932384626433832795
 /////////////////////////////
-float P_GAIN=           0.7;
-float I_GAIN=           0.3;
-float D_GAIN=           0.4;
+float P_GAIN = 0.7;
+float I_GAIN = 0.3;
+float D_GAIN = 0.4;
 /////////////////////////////
-#define LoopTime             100
+#define LoopTime 100
 /////////////////////////////
 #include <ros.h>
 #include <ros/time.h>
@@ -33,130 +33,158 @@ float D_GAIN=           0.4;
 #include <geometry_msgs/Twist.h>
 #include <sensor_msgs/Joy.h>
 
-#include <Servo.h> 
-// Bound the input value between x_min and x_max. Also works in anti-windup 
-int CheckClamp(int x) {
+#include <Servo.h>
+// Bound the input value between x_min and x_max. Also works in anti-windup
+int CheckClamp(int x)
+{
   int speed = constrain(x, -MAX_SPEED, MAX_SPEED); // Speed Limit
-  Clamped = not (speed == x);
+  Clamped = not(speed == x);
   return speed;
 }
- void set_Throttle_Goal(int speed) { // -100 :-: 100
-  speed = constrain(speed, -MAX_SPEED, MAX_SPEED); // Speed Limit
-  goal_velocity = speed;
-}
-void UpdatePIDController(){
+
+void UpdatePIDController()
+{
   // compute the error between the measurement and the desired value
-  velocityError = goal_velocity - actual_velocity;
+  velocityError = goal_velocity - velocity_estimate;
   DerivativeTerm = velocityError - lastVelocityError;
-  
+
   // If the actuator is saturating ignore the integral term
   // if the system is clamped and the sign of the integrator term and the sign of the PID output are the same
-  if (Clamped and ((PID_Output/abs(PID_Output))==(IntegralTerm/abs(IntegralTerm)))){ 
+  if (Clamped and ((PID_Output / abs(PID_Output)) == (IntegralTerm / abs(IntegralTerm))))
+  {
     IntegralTerm += 0;
-  } else {
+  }
+  else
+  {
     IntegralTerm += velocityError;
   }
   // compute the control effort by multiplying the error by Kp
   PID_Output = (velocityError * P_GAIN) + (IntegralTerm * I_GAIN) + (DerivativeTerm * D_GAIN);
-  current_throttle_setting += PID_Output; 
+  current_throttle_setting += PID_Output;
 
   // make sure the output value is bounded to 0 to 100 using the bound function defined below
   current_throttle_setting = CheckClamp(current_throttle_setting);
   set_Throttle(current_throttle_setting); // then write it to the LED pin to change control voltage to LED
 }
 
-double mapf(double val, double in_min, double in_max, double out_min, double out_max) {
-    return (val - in_min) * (out_max - out_min) / (in_max - in_min) + out_min;
+double mapf(double val, double in_min, double in_max, double out_min, double out_max)
+{
+  return (val - in_min) * (out_max - out_min) / (in_max - in_min) + out_min;
 }
 
 //Globals
-unsigned long lastMilli = 0; // time at the end of the last loop 
-byte mode = 'R'; // ROS Mode
+unsigned long lastMilli = 0; // time at the end of the last loop
+byte mode = 'R';             // ROS Mode
 byte ledstatus = LOW;
 boolean moving_forward = false;
 
-int rpm= 0;
+int rpm = 0;
 volatile unsigned long pulses = 0; // rev counter
-unsigned long old_pulses = 0;
+volatile unsigned long last_pulse = 0; // time of the last pulse 
+unsigned long old_pulses = 0; // pulses since turning on 
+volatile float velocity_estimate = 0;
+volatile bool moved = false;
 
 bool Clamped = false;
 int IntegralTerm = 0;
 int DerivativeTerm = 0;
-int PID_Output = 0; 
+int PID_Output = 0;
 int velocityError = 0;
 int lastVelocityError = 0;
+int current_throttle_setting = 0;
 
 ros::NodeHandle nh;
 
 std_msgs::Int16 ticks_msg;
 ackermann_msgs::AckermannDriveStamped state_msg;
 
-ros::Publisher pub_ticks("/ticks",&ticks_msg);
-ros::Publisher pub_right_ticks("/right_ticks",&right_ticks_msg);
+ros::Publisher pub_state("/rc_state", &state_msg);
 
-void DriverCallback(const ackermann_msgs::AckermannDriveStamped&);
-ros::Subscriber<ackermann_msgs::AckermannDriveStamped> drive("ackermann_cmd", &DriverCallback); 
+void DriverCallback(const ackermann_msgs::AckermannDriveStamped &);
+ros::Subscriber<ackermann_msgs::AckermannDriveStamped> drive("ackermann_cmd", &DriverCallback);
 
-void getMotorData(unsigned long time) {
-  double delta_time = double(time)/1000; // must be in seconds for these formulas 
-  
-  rpm = (60*(double(pulses - old_pulses)/ENCODER_RESOLUTION))/delta_time; // 60 is to convert from seconds to minutes
-  ticks_msg.data += pulses - old_pulses;
-  old_pulses = pulses;
-  state_msg.drive.speed = 1;
+void getMotorData(unsigned long time)
+{
+  // double delta_time = double(time) / 1000; // must be in seconds for these formulas
+  // rpm = (60*(double(pulses - old_pulses)/ENCODER_RESOLUTION))/delta_time; // 60 is to convert from seconds to minutes
+  // old_pulses = pulses;
+  // state_msg.drive.speed = 1;
 }
-void EncoderEvent() { // Counts pulses on the  Encoder
-  if (digitalRead(EncoderPin) == LOW) {
-    if (moving_forward){
-      pulses++;
-    } else {
-      pulses--;
+void EncoderEvent()
+{ // Counts pulses on the  Encoder
+  if (digitalRead(EncoderPin) == LOW)
+  {
+    if (last_pulse != 0){
+      velocity_estimate =  ((WHEEL_DIAMETER * PI) / ENCODER_RESOLUTION) / (1000 / ((millis() - last_pulse))
     }
+    moved = true;
+    last_pulse = millis();
+    /*
+    if (moving_forward)
+    {
+      pulses++;
+    }
+    else
+    {
+      pulses--;
+    }*/
   }
 }
 Servo Throttle;
 Servo Steering;
-void Brake(){ // Disengages the brake on the ESC
-  moving_forward = false; // Set first to prevent recurion 
+void Brake()
+{                         // Disengages the brake on the ESC
+  moving_forward = false; // Set first to prevent recurion
   Throttle.write(60);
-  delay(100);    
-  Throttle.write(90); 
+  delay(100);
+  Throttle.write(90);
   delay(100);
 }
-void set_Throttle(int _speed) { // -100 :-: 100
+void set_Throttle(int _speed)
+{                                                    // -100 :-: 100
   _speed = constrain(_speed, -MAX_SPEED, MAX_SPEED); // Speed Limit
-  if ((_speed < 0) && moving_forward){
-    Brake(); 
-  }   
-  if (_speed > 0){
-    moving_forward = true;      
+  if ((_speed < 0) && moving_forward)
+  {
+    Brake();
   }
-  _speed = map(_speed,-100,100,55,145);
+  if (_speed > 0)
+  {
+    moving_forward = true;
+  }
+  _speed = map(_speed, -100, 100, 55, 145);
   Throttle.write(_speed);
 }
-void DriverCallback(const ackermann_msgs::AckermannDriveStamped& cmd_msg) {
+void DriverCallback(const ackermann_msgs::AckermannDriveStamped &cmd_msg)
+{
   // Lin -.5:.5  Ang -1.5:1.5
-    set_Throttle(mapf(cmd_msg.drive.speed,-.5,.5,-100,100));
-    Steering.write(mapf(cmd_msg.drive.steering_angle,-.5,.5,0,180));
-    state_msg.drive.steering_angle = cmd_msg.drive.steering_angle;
+  goal_velocity = cmd_msg.drive.speed;
+  //set_Throttle_Goal();
+  Steering.write(mapf(cmd_msg.drive.steering_angle, -.5, .5, 0, 180));
+  state_msg.drive.steering_angle = cmd_msg.drive.steering_angle;
 }
-void PublishState(unsigned long time) {
+void PublishState(unsigned long time)
+{
+  state_msg.header.stamp = nh.now();
+  if (moved == false){state_msg.drive.speed = 0;}
   pub_state.publish(&state_msg);
+  moved = false;
 }
-void setup() {
+
+void setup()
+{
   nh.initNode();
   nh.getHardware()->setBaud(57600); // Ros Node uses 57600 by default
   nh.subscribe(drive);
   nh.advertise(pub_state);
-  
-  pinMode(ThrottleControlPin, OUTPUT); 
-  pinMode(EncoderPin, INPUT); 
+
+  pinMode(ThrottleControlPin, OUTPUT);
+  pinMode(EncoderPin, INPUT);
   // digitalPinToInterrupt(RightEncoderPinA) == 0
   attachInterrupt(0, EncoderEvent, FALLING); // Trigger right_rpmcounter whenever hall sensor pulses
-  
+
   Throttle.attach(ThrottleControlPin);
   Steering.attach(SteeringControlPin);
-  
+
   Throttle.write(90);
   delay(2000);
   Throttle.write(0);
@@ -167,12 +195,15 @@ void setup() {
   delay(2000);
 }
 
-void loop() {
+void loop()
+{
   nh.spinOnce();
   unsigned long time = millis(); // time - lastMilli == time passed
-  if(time - lastMilli >= LoopTime)   { // Enter Timed Loop 
+  if (time - lastMilli >= LoopTime)
+  { // Enter Timed Loop
+    UpdatePIDController();
     getMotorData(time - lastMilli);
-    PublishState(time - lastMilli);// Publish and Restart Loop 
+    PublishState(time - lastMilli); // Publish and Restart Loop
     lastMilli = time;
   }
 }
