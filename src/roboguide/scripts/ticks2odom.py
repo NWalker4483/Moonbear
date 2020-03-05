@@ -50,7 +50,7 @@ def tck_callback(data):
 	#now update our pose estimate
 	odom = Odometry()
  	odom.header.stamp = current_time
-    odom.header.frame_id = "odom"
+        odom.header.frame_id = "odom"
 	odom.pose.pose = Pose(Point(x_, y_, 0.), Quaternion(*odom_quat))
 
 	# Co variance should be cacluated empirically
@@ -60,7 +60,7 @@ def tck_callback(data):
 
 	# Set Velocity
 	odom.child_frame_id = 'base_link'
-    odom.twist.twist = Twist(Vector3(current_speed, 0, 0), Vector3(0, 0, angular_velocity))
+        odom.twist.twist = Twist(Vector3(current_speed, 0, 0), Vector3(0, 0, angular_velocity))
 	pub.publish(odom)
 	last_time = current_time
 

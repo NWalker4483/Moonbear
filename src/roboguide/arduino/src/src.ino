@@ -6,12 +6,13 @@
 /////////////////////////////
 #define EncoderPin 2 // Digital Interrupt Pin
 /////////////////////////////
-#define UsingMixedMode false
 #define ThrottleControlPin 6 // Also acts as X when in mixed mode and throttle when in RC Mode
 #define SteeringControlPin 5 // Also acts as Y when in mixed mode and steering when in RC Mode
 /////////////////////////////
 #define CRAWL_SPEED 20 // %
 #define MAX_SPEED 36   // %
+#define STILL_ALLOWANCE 10 // Loop I
+#define REVERSE_ALLOWANCE 10
 /////////////////////////////
 // Physical Properties of the robot
 #define WHEEL_BASE 10        //inches // I forgot Y I did this in inches
@@ -19,11 +20,12 @@
 #define WHEEL_DIAMETER .12    // m
 #define PI 3.1415926535897932384626433832795
 /////////////////////////////
-float P_GAIN = 0.7;
-float I_GAIN = 0.3;
-float D_GAIN = 0.4;
+float P_GAIN = .002;
+float I_GAIN = 0.1;
+float D_GAIN = 6;
+SimpleKalmanFilter simpleKalmanFilter(.25, .25, 0.001);
 /////////////////////////////
-#define LoopTime 100
+#define LoopTime 100 // 10 Hz
 /////////////////////////////
 #include <ros.h>
 #include <ros/time.h>
@@ -31,13 +33,29 @@ float D_GAIN = 0.4;
 #include <std_msgs/Int16.h>
 #include <ackermann_msgs/AckermannDriveStamped.h>
 #include <geometry_msgs/Twist.h>
-#include <sensor_msgs/Joy.h>
 
+#include <SimpleKalmanFilter.h>
 #include <Servo.h>
+
+bool Clamped = false;
+float IntegralTerm = 0;
+float DerivativeTerm = 0;
+float PID_Output = 0;
+volatile float velocity_estimate = 0;
+float goal_velocity = 0;
+float velocityError = 0;
+float lastVelocityError = 0;
+float current_throttle_setting = 0;
+
+ros::NodeHandle nh;
+
+std_msgs::Int16 ticks_msg;
+ackermann_msgs::AckermannDriveStamped state_msg;
+
 // Bound the input value between x_min and x_max. Also works in anti-windup
-int CheckClamp(int x)
+float CheckClamp(float x)
 {
-  int speed = constrain(x, -MAX_SPEED, MAX_SPEED); // Speed Limit
+  float speed = constrain(x, -MAX_SPEED, MAX_SPEED); // Speed Limit
   Clamped = not(speed == x);
   return speed;
 }
@@ -60,8 +78,8 @@ void UpdatePIDController()
   }
   // compute the control effort by multiplying the error by Kp
   PID_Output = (velocityError * P_GAIN) + (IntegralTerm * I_GAIN) + (DerivativeTerm * D_GAIN);
-  current_throttle_setting += PID_Output;
-
+  current_throttle_setting = PID_Output;
+  state_msg.drive.acceleration = PID_Output;
   // make sure the output value is bounded to 0 to 100 using the bound function defined below
   current_throttle_setting = CheckClamp(current_throttle_setting);
   set_Throttle(current_throttle_setting); // then write it to the LED pin to change control voltage to LED
@@ -82,21 +100,8 @@ int rpm = 0;
 volatile unsigned long pulses = 0; // rev counter
 volatile unsigned long last_pulse = 0; // time of the last pulse 
 unsigned long old_pulses = 0; // pulses since turning on 
-volatile float velocity_estimate = 0;
 volatile bool moved = false;
 
-bool Clamped = false;
-int IntegralTerm = 0;
-int DerivativeTerm = 0;
-int PID_Output = 0;
-int velocityError = 0;
-int lastVelocityError = 0;
-int current_throttle_setting = 0;
-
-ros::NodeHandle nh;
-
-std_msgs::Int16 ticks_msg;
-ackermann_msgs::AckermannDriveStamped state_msg;
 
 ros::Publisher pub_state("/rc_state", &state_msg);
 
@@ -115,19 +120,13 @@ void EncoderEvent()
   if (digitalRead(EncoderPin) == LOW)
   {
     if (last_pulse != 0){
-      velocity_estimate =  ((WHEEL_DIAMETER * PI) / ENCODER_RESOLUTION) / (1000 / ((millis() - last_pulse))
-    }
+      
+    velocity_estimate = ((WHEEL_DIAMETER * PI) / ENCODER_RESOLUTION) / (((millis() - last_pulse))/1000.f);
+    velocity_estimate *= moving_forward ? 1 : 1;
+    simpleKalmanFilter.updateEstimate(velocity_estimate);
+  }
     moved = true;
     last_pulse = millis();
-    /*
-    if (moving_forward)
-    {
-      pulses++;
-    }
-    else
-    {
-      pulses--;
-    }*/
   }
 }
 Servo Throttle;
@@ -141,8 +140,7 @@ void Brake()
   delay(100);
 }
 void set_Throttle(int _speed)
-{                                                    // -100 :-: 100
-  _speed = constrain(_speed, -MAX_SPEED, MAX_SPEED); // Speed Limit
+{                                     
   if ((_speed < 0) && moving_forward)
   {
     Brake();
@@ -157,7 +155,8 @@ void set_Throttle(int _speed)
 void DriverCallback(const ackermann_msgs::AckermannDriveStamped &cmd_msg)
 {
   // Lin -.5:.5  Ang -1.5:1.5
-  goal_velocity = cmd_msg.drive.speed;
+  goal_velocity = cmd_msg.drive.speed * 5;
+  state_msg.drive.jerk = goal_velocity;
   //set_Throttle_Goal();
   Steering.write(mapf(cmd_msg.drive.steering_angle, -.5, .5, 0, 180));
   state_msg.drive.steering_angle = cmd_msg.drive.steering_angle;
@@ -165,6 +164,7 @@ void DriverCallback(const ackermann_msgs::AckermannDriveStamped &cmd_msg)
 void PublishState(unsigned long time)
 {
   state_msg.header.stamp = nh.now();
+  state_msg.drive.speed = simpleKalmanFilter.updateEstimate(velocity_estimate);;
   if (moved == false){state_msg.drive.speed = 0;}
   pub_state.publish(&state_msg);
   moved = false;
@@ -193,6 +193,7 @@ void setup()
   delay(2000);
   Throttle.write(90);
   delay(2000);
+  //while(true){}
 }
 
 void loop()
@@ -202,7 +203,6 @@ void loop()
   if (time - lastMilli >= LoopTime)
   { // Enter Timed Loop
     UpdatePIDController();
-    getMotorData(time - lastMilli);
     PublishState(time - lastMilli); // Publish and Restart Loop
     lastMilli = time;
   }
