@@ -10,8 +10,8 @@
 /////////////////////////////////////////////////
 #define EncoderPin 2 // Digital Interrupt Pin
 /////////////////////////////
-#define ThrottleControlPin 6 // Also acts as X when in mixed mode and throttle when in RC Mode
-#define SteeringControlPin 5 // Also acts as Y when in mixed mode and steering when in RC Mode
+#define ThrottleControlPin 12 // Also acts as X when in mixed mode and throttle when in RC Mode
+#define SteeringControlPin 9 // Also acts as Y when in mixed mode and steering when in RC Mode
 /////////////////////////////
 #define CRAWL_SPEED 20     // %
 #define MAX_SPEED 36       // %
@@ -24,28 +24,29 @@
 #define WHEEL_DIAMETER .12   // m
 #define PI 3.1415926535897932384626433832795
 /////////////////////////////
-SimpleKalmanFilter simpleKalmanFilter(.25, .25, 0.001);
+//SimpleKalmanFilter simpleKalmanFilter(.25, .25, 0.001);
 /////////////////////////////
 #define LoopTime 100 // 10 Hz
-/////////////////////////////
+///////////////
+#define    STX          0x02
+#define    ETX          0x03   
+//////////////
 #include <ros.h>
 #include <ros/time.h>
 
 #include <std_msgs/Int16.h>
 #include <ackermann_msgs/AckermannDriveStamped.h>
-#include <geometry_msgs/Twist.h>
 
-#include <SimpleKalmanFilter.h>
+//#include <SimpleKalmanFilter.h>
 #include <Servo.h>
 
-bool Clamped = false;
-float IntegralTerm = 0;
-float DerivativeTerm = 0;
-float PID_Output = 0;
+#include <SoftwareSerial.h>
+SoftwareSerial BT_Serial(11,10); // RX | TX
+
 volatile float velocity_estimate = 0;
-float goal_velocity = 0;
-float velocityError = 0;
-float lastVelocityError = 0;
+//float goal_velocity = 0;
+//float velocityError = 0;
+//float lastVelocityError = 0;
 float current_throttle_setting = 0;
 
 ros::NodeHandle nh;
@@ -123,7 +124,7 @@ void CheckModeJumpers()
 {
   pinMode(StatusModePin, INPUT);
   pinMode(BluetoothControlModePin, INPUT);
-  pinMode(SimpleSerialModePin, INPUT);
+  pinMode(SerialControlModePin, INPUT);
   pinMode(LED_BUILTIN, OUTPUT);
   if (digitalRead(StatusModePin) == HIGH)
   {                     // If the dev jumper is connected set dev_mode to true
@@ -160,25 +161,18 @@ void getMotorData(unsigned long time)
 {
   // double delta_time = double(time) / 1000; // must be in seconds for these formulas
   // rpm = (60*(double(pulses - old_pulses)/ENCODER_RESOLUTION))/delta_time; // 60 is to convert from seconds to minutes
-  // old_pulses = pulses;
+  // old_pulses = pulses
   // state_msg.drive.speed = 1;
 }
 void EncoderEvent()
 { // Counts pulses on the  Encoder
   if (digitalRead(EncoderPin) == LOW)
   {
-    if (last_pulse != 0)
-    {
-
-      velocity_estimate = ((WHEEL_DIAMETER * PI) / ENCODER_RESOLUTION) / (((millis() - last_pulse)) / 1000.f);
-      velocity_estimate *= moving_forward ? 1 : 1;
-      simpleKalmanFilter.updateEstimate(velocity_estimate);
-    }
     moved = true;
     last_pulse = millis();
   }
 }
-
+void set_Steering(int _speed){}
 Servo Throttle;
 Servo Steering;
 
@@ -204,20 +198,11 @@ void set_Throttle(int _speed)
   _speed = map(_speed, -100, 100, 55, 145);
   Throttle.write(_speed);
 }
-/* void Brake()
- {                         // Disengages the brake on the ESC
-   moving_forward = false; // Set first to prevent recurion
-   set_Throttle(-20);
-   delay(100);
-   set_Throttle(0);
-   delay(100);
- } */
+
 void DriverCallback(const ackermann_msgs::AckermannDriveStamped &cmd_msg)
 {
   // Lin -.5:.5  Ang -1.5:1.5
-  goal_velocity = cmd_msg.drive.speed * 5;
-  state_msg.drive.jerk = goal_velocity;
-  //set_Throttle_Goal();
+  set_Throttle(cmd_msg.drive.speed * 200);
   Steering.write(mapf(cmd_msg.drive.steering_angle, -.5, .5, 0, 180));
   state_msg.drive.steering_angle = cmd_msg.drive.steering_angle;
 }
@@ -225,7 +210,7 @@ void DriverCallback(const ackermann_msgs::AckermannDriveStamped &cmd_msg)
 void PublishState(unsigned long time)
 {
   state_msg.header.stamp = nh.now();
-  state_msg.drive.speed = simpleKalmanFilter.updateEstimate(velocity_estimate);
+  //state_msg.drive.speed = simpleKalmanFilter.updateEstimate(velocity_estimate);
   if (moved == false)
   {
     state_msg.drive.speed = 0;
@@ -251,7 +236,7 @@ void ReadSerialCommands()
       setting = parseIntFast(4);
       set_Steering(setting);
       Serial.print("Set Steering to ");
-      Serial.println(current_steering_angle);
+     // Serial.println(current_steering_angle);
       break;
     }
     Serial.flush();
@@ -259,7 +244,7 @@ void ReadSerialCommands()
 }
 
 void ReadBluetoothCommands()
-{ // Plot PID Values using Serial Plotter
+{ 
   if (BT_Serial.available() > 0)
   { // data received from smartphone
     delay(2);
@@ -288,6 +273,7 @@ void setup()
 {
   CheckModeJumpers();
 
+  pinMode(SteeringControlPin, OUTPUT);
   pinMode(ThrottleControlPin, OUTPUT);
   pinMode(EncoderPin, INPUT);
   // digitalPinToInterrupt(RightEncoderPinA) == 0
@@ -308,31 +294,19 @@ void setup()
 
 void loop()
 {
-  nh.spinOnce();
-  unsigned long time = millis(); // time - lastMilli == time passed
-  if (time - lastMilli >= LoopTime)
-  { // Enter Timed Loop
-    PublishState(time - lastMilli); // Publish and Restart Loop
-    lastMilli = time;
-  }
-}
-
-void loop()
-{
   unsigned long time = millis(); // time - lastMilli == time passed
   //OUPUTS
   if (time - lastMilli >= LoopTime)
-  {                                 // Enter Timed Loop
-    getMotorData(time - lastMilli); //
-    // UpdatePIDController();
+  { // Enter Timed Loop
+    getMotorData(time - lastMilli);
     switch (mode)
     {
     case 'D': // Send Status Info
       SendDebugInfo();
       break;
     case 'R': // ROS Mode
-      
-    PublishState(time - lastMilli); // Publish and Restart Loop
+      //PublishTransform();
+      PublishState(time - lastMilli); // Publish and Restart Loop
       break; // Publish and Restart Loop
     }
     lastMilli = time;
@@ -354,10 +328,7 @@ void loop()
 //https://answers.ros.org/question/73627/how-to-increase-rosserial-buffer-size/
 //http://andrewjkramer.net/motor-encoders-arduino/
 //////////////////////
-
-#define STX 0x02
-#define ETX 0x03
-
+/*
 void getMotorData(unsigned long time)
 {
   double delta_time = double(time) / 1000;                                     // must be in seconds for these formulas
@@ -368,24 +339,11 @@ void getMotorData(unsigned long time)
   actual_throttle = actual_throttle * (rpm / abs(rpm));   // -100 :-: 100
   //basic velocity inputs
   linear_velocity = (rpm * (WHEEL_DIAMETER / 100.0) * PI) / delta_time; // m/s from rear wheels
-  current_steering_angle;                                               // must be in radians ... I think
+  //current_steering_angle;                                               // must be in radians ... I think
   //first get the theta update
-  angular_velocity = linear_velocity * (tan(current_steering_angle) / WHEEL_BASE);
-}
-
-void MotorEncoder()
-{ // Counts Pulses on the Motor Encoder
-  if (moving_forward)
-  {
-    pulses++;
-  }
-  else
-  {
-    pulses--;
-  }
-}
-
-
+  //angular_velocity = linear_velocity * (tan(current_steering_angle) / WHEEL_BASE);
+}*/
+/*
 void PublishTransform()
 {
   geometry_msgs::TransformStamped t;
@@ -404,16 +362,16 @@ void PublishTransform()
   t.header.stamp = current_time;
 
   broadcaster.sendTransform(t);
-}
+}*/
 
 void SendDebugInfo()
 { // TODO: Printing all this data causes a large delay in the speed updater
   Serial.print("THROTTLE SETTING: ");
   Serial.println(current_throttle_setting);
   Serial.print("STEERING SETTING: ");
-  Serial.println(current_steering_angle);
+  //Serial.println(current_steering_angle);
   Serial.print("RPM: ");
-  Serial.println(rpm);
+ // Serial.println(rpm);
   /*
   Serial.print("LINEAR VELOCITY: ");
   Serial.print(linear_velocity);
@@ -424,9 +382,6 @@ void SendDebugInfo()
   Serial.print("PULSES SINCE LAST UPDATE: ");
   Serial.println(pulses);*/
   Serial.print("TOTAL PULSES: ");
-  Serial.println(abs(oldpulses));
+//  Serial.println(abs(oldpulses));
   Serial.print("\n");
 }
-
-
-
