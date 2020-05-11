@@ -43,11 +43,6 @@ volatile float velocity_estimate = 0;
 //float lastVelocityError = 0;
 float current_throttle_setting = 0;
 
-ros::NodeHandle nh;
-
-std_msgs::Int16 ticks_msg;
-ackermann_msgs::AckermannDriveStamped state_msg;
-
 /////// Bluetooth stuff I aint write this LOL
 byte cmd[8] = {0, 0, 0, 0, 0, 0, 0, 0}; // bytes received
 
@@ -83,7 +78,7 @@ void getJoystickState(byte data[8])
     return; // commmunication error
 
   set_Throttle(joyY);
-  set_Steering(map(-joyX, -100, 100, -90, 90));
+  set_Steering(map(-joyX, -100, 100, 0, 180));
 }
 
 //Globals
@@ -157,10 +152,14 @@ void EncoderEvent()
     last_pulse = millis();
   }
 }
-void set_Steering(int _speed){}
+
 Servo Throttle;
 Servo Steering;
 
+void set_Steering(int _angle){
+  Steering.write(_angle);
+  }
+  
 void Brake()
 {                         // Disengages the brake on the ESC
   moving_forward = false; // Set first to prevent recurion
@@ -256,6 +255,7 @@ void setup()
   delay(2000);
   Throttle.write(90);
   delay(2000);
+  mode = 'B';
 }
 
 void loop()
@@ -301,26 +301,6 @@ void getMotorData(unsigned long time)
   //current_steering_angle;                                               // must be in radians ... I think
   //first get the theta update
   //angular_velocity = linear_velocity * (tan(current_steering_angle) / WHEEL_BASE);
-}*/
-/*
-void PublishTransform()
-{
-  geometry_msgs::TransformStamped t;
-
-  t.header.frame_id = "/odom";
-  t.child_frame_id = "/base_link";
-  t.transform.translation.x = current_x;
-  t.transform.translation.y = current_y;
-  t.transform.translation.z = 0.0;
-
-  t.transform.rotation.x = 0.0;
-  t.transform.rotation.y = 0.0;
-  t.transform.rotation.z = sin(current_yaw / 2.0);
-  t.transform.rotation.w = cos(current_yaw / 2.0);
-
-  t.header.stamp = current_time;
-
-  broadcaster.sendTransform(t);
 }*/
 
 void SendDebugInfo()
