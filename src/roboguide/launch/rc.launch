@@ -3,18 +3,10 @@
     <param name="port" value="/dev/ttyACM1"/>
     <param name="baud" value="57600"/>
 </node>
-<!--
-<node name="usb_cam" pkg="usb_cam" type="usb_cam_node">
-    <param name="video_device" value="/dev/video0" />
-    <param name="image_width" value="640" />
-    <param name="image_height" value="480" />
-    <param name="pixel_format" value="yuyv" />
-    <param name="camera_frame_id" value="usb_cam" />
-    <param name="io_method" value="mmap"/>
-</node>-->
-<node pkg="rplidar_ros" type="rplidarNode" name="scanner"/>
+
 <node pkg="roboguide" type="ticks2odom.py" name="base_odom_node"/>
 <node pkg="roboguide" type="cmd2ack.py" name="twist2ackermann"/> 
+
 <node pkg="tf" type="static_transform_publisher" name="scan_base_link" args="0 0 0 0 0 0 /base_link /laser_frame 100"/> 
 
 </launch>

@@ -10,7 +10,6 @@ def convert_trans_rot_vel_to_steering_angle(v, omega, wheelbase):
   radius = v / omega
   return math.atan(wheelbase / radius)
 
-
 def cmd_callback(data):
   global wheelbase
   global ackermann_cmd_topic
@@ -28,10 +27,8 @@ def cmd_callback(data):
   
   pub.publish(msg)
   
-
 if __name__ == '__main__': 
-  try:
-    
+  try:    
     rospy.init_node('cmd_vel_to_ackermann_drive')
         
     twist_cmd_topic = rospy.get_param('~twist_cmd_topic', '/cmd_vel') 

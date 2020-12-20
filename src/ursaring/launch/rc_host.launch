@@ -1,4 +1,0 @@
-<launch>
-<node name="joystick" pkg="joy" type="joy_node"/>
-<node name="joystick2cmd" pkg="teleop_twist_joy" type="teleop_node"/>
-</launch>
