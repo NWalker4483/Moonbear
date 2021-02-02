@@ -1,13 +1,13 @@
 <div align="center">
-<img src="images/image5.png"/>
-<img src="images/image1.jpg"/>
+<img width="200px"  src="images/image5.png"/>
+<img width="200px"  src="images/image1.jpg"/>
 
 # Morgan State University’s School of Engineering
 ## MSU RACECAR V1
 
-<img src="images/image4.png"/>
-<img src="images/image7.png"/>
-<img src="images/image6.png"/>
+<img width="200px"  src="images/image4.png"/>
+<img width="200px"  src="images/image7.png"/>
+<img width="200px"  src="images/image6.png"/>
 
 # Table of contents
 </div>
@@ -33,7 +33,7 @@
 ## Introduction <a name="intro"></a>
 Morgan State University is attempting to delve into the world of Artificial Intelligence. This project is meant to act as a jumping off point for a future endeavors and build a platform that students can learn from and build upon.
 
-<img src="images/image1.jpg"/>
+<img width="200px"  src="images/image1.jpg"/>
 
 ## The Build Construction <a name="intro"></a>
 
@@ -78,13 +78,13 @@ This section lists the parts needed to build the MSU RACECAR. After you have rec
 ||||||
 |---|---|---|---|---|
 | Image(s) | Purpose | Supports Needed | Layer Height | Printspeed |
-|<img src="images/image3.jpg"/><img src="images/image11.jpg"/>||No|.28mm| 150mm/s|
-|<img src="images/image8.jpg"/>|Screws into the rear underside of the Jetson nano, while the front side rests on a piece of foam on top of the ESC|Yes|.28mm| 150mm/s|
-|<img src="images/image9.jpg"/><img src="images/image10.jpg"/>|Screws into the underside of the ESC and attaches to the sides of the arduinos perf board|Yes|.28mm| 150mm/s|
-|<img src="images/image9.jpg"/><img src="images/image10.jpg"/>|Screws into the underside of the ESC and attaches to the sides of the arduinos perf board|Yes|.28mm| 150mm/s|
+|<img width="200px"  src="images/image3.jpg"/><img width="200px"  src="images/image11.jpg"/>||No|.28mm| 150mm/s|
+|<img width="200px"  src="images/image8.jpg"/>|Screws into the rear underside of the Jetson nano, while the front side rests on a piece of foam on top of the ESC|Yes|.28mm| 150mm/s|
+|<img width="200px"  src="images/image9.jpg"/><img width="200px"  src="images/image10.jpg"/>|Screws into the underside of the ESC and attaches to the sides of the arduinos perf board|Yes|.28mm| 150mm/s|
+|<img width="200px"  src="images/image9.jpg"/><img width="200px"  src="images/image10.jpg"/>|Screws into the underside of the ESC and attaches to the sides of the arduinos perf board|Yes|.28mm| 150mm/s|
 ### Wiring
-<img src="images/image12.jpg" alt="Wiring Diagram"/>In order to simplify powering the nano I chose to pull power from the RC battery to a LM2596 as shown above. 
-<img src="images/image12.jpg" alt="Wiring Diagram"/>
+<img width="200px"  src="images/image12.jpg" alt="Wiring Diagram"/>In order to simplify powering the nano I chose to pull power from the RC battery to a LM2596 as shown above. 
+<img width="200px"  src="images/image12.jpg" alt="Wiring Diagram"/>
 
 ## Software Setup
 ### ROS
