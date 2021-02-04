@@ -78,12 +78,16 @@ This section lists the parts needed to build the MSU RACECAR. After you have rec
 ||||||
 |---|---|---|---|---|
 | Image(s) | Purpose | Supports Needed | Layer Height | Printspeed |
-|<img width="200px"  src="images/image3.jpg"/><img width="200px"  src="images/image11.jpg"/>||No|.28mm| 150mm/s|
+|<img width="200px"  src="images/image3.jpg"/><img width="200px"  src="images/image11.jpg"/>|Acts as a mount for the 2 3D Sensing Cameras|No|.28mm| 150mm/s|
 |<img width="200px"  src="images/image8.jpg"/>|Screws into the rear underside of the Jetson nano, while the front side rests on a piece of foam on top of the ESC|Yes|.28mm| 150mm/s|
-|<img width="200px"  src="images/image9.jpg"/><img width="200px"  src="images/image10.jpg"/>|Screws into the underside of the ESC and attaches to the sides of the arduinos perf board|Yes|.28mm| 150mm/s|
-|<img width="200px"  src="images/image9.jpg"/><img width="200px"  src="images/image10.jpg"/>|Screws into the underside of the ESC and attaches to the sides of the arduinos perf board|Yes|.28mm| 150mm/s|
+|<img width="200px"  src="images/image9.jpg"/><img width="200px"  src="images/image10.jpg"/>|Screws into the body of the ESC and attaches to the sides of the arduinos perf board|Yes|.28mm| 150mm/s|
+|<img width="200px"  src="images/image3.jpg"/>|Acts to extend the head of a Nmm bolt ```A small hole must be drilled in the frame for the bolt to pass through```|Yes|.28mm| 150mm/s|
 ### Wiring
-<img width="200px"  src="images/image12.jpg" alt="Wiring Diagram"/>In order to simplify powering the nano I chose to pull power from the RC battery to a LM2596 as shown above. 
+
+<img width="200px"  src="images/image12.jpg" alt="Wiring Diagram"/>
+
+In order to simplify powering the nano I chose to pull power from the RC battery to a LM2596 as shown above. 
+
 <img width="200px"  src="images/image12.jpg" alt="Wiring Diagram"/>
 
 ## Software Setup
@@ -94,7 +98,7 @@ Once that process is complete, finish by installing ROS kinetic with the provide
 ``` Only the base version is necessary but if you would like to use the GUI tools in my experience they will run fine.```
 
 ### Arduino
-After which you should clone the git repo into the root of your device. Running the ./setup.sh installation script in the GitHub will install additional dependencies for ROS. Run ls /dev/tty* to find which port your arduino is attached on. cd into [Moonbear/src/roboguide/arduino/]() and run ‘ino build; ino upload -p ${port}’
+After which you should clone the git repo into the root of your device. Running the ```./setup.sh``` installation script in the GitHub will install additional dependencies for ROS. Run ```ls /dev/tty*``` to find which port your arduino is attached on. cd into [Moonbear/src/roboguide/arduino/]() and run ```ino build; ino upload -p ${port}```
 
 ### Bluetooth
 Just install the Joy Bluetooth Commander from the play store and pair to the HC-06 device within the app
@@ -104,5 +108,6 @@ For either mode it's necessary to power the computer since there is no on or off
 
 ```Though this didn't raise issues during development you should shut down the nano separately via SSH first```
 ### Manual 
+Turning on the setup without connecting *** will startup the car in bluetooth mode 
 ### Autonomous 
-In a new terminal run ‘roslaunch rc.launch’ to run the ros control 
+In a new terminal run ```roslaunch rc.launch``` to run the ROS control 
