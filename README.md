@@ -81,7 +81,7 @@ This section lists the parts needed to build the MSU RACECAR. After you have rec
 |<img width="200px"  src="images/image3.jpg"/><img width="200px"  src="images/image11.jpg"/>|Acts as a mount for the 2 3D Sensing Cameras|No|.28mm| 150mm/s|
 |<img width="200px"  src="images/image8.jpg"/>|Screws into the rear underside of the Jetson nano, while the front side rests on a piece of foam on top of the ESC|Yes|.28mm| 150mm/s|
 |<img width="200px"  src="images/image9.jpg"/><img width="200px"  src="images/image10.jpg"/>|Screws into the body of the ESC and attaches to the sides of the arduinos perf board|Yes|.28mm| 150mm/s|
-|<img width="200px"  src="images/image3.jpg"/>|Acts to extend the head of a Nmm bolt ```A small hole must be drilled in the frame for the bolt to pass through```|Yes|.28mm| 150mm/s|
+|<img width="200px"  src="images/image12.jpeg"/>|Acts to extend the head of a Nmm bolt ```A small hole must be drilled in the frame for the bolt to pass through```|Yes|.28mm| 150mm/s|
 ### Wiring
 
 <img width="200px"  src="images/image12.jpg" alt="Wiring Diagram"/>
@@ -108,6 +108,6 @@ For either mode it's necessary to power the computer since there is no on or off
 
 ```Though this didn't raise issues during development you should shut down the nano separately via SSH first```
 ### Manual 
-Turning on the setup without connecting *** will startup the car in bluetooth mode 
+Turning on the setup without connecting *** will startup the car in bluetooth mode. Then launch the App and start driving
 ### Autonomous 
-In a new terminal run ```roslaunch rc.launch``` to run the ROS control 
+In a new terminal run ```roslaunch rc.launch``` to run the ROS control. After it succesfully connects to the arduino run ```roslaunch mapping.launch``` on either the host machine to run and map the area. 
