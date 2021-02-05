@@ -47,9 +47,9 @@ This section lists the parts needed to build the MSU RACECAR. After you have rec
 ||||||
 |---|---|---|---|---|
 |Part | Quantity | Cost | URL | Note |
-|Jetson Nano|1|$99.00||The 2GB version is also |
-|Arduino Micro|1|$32.00||Generic Version will work also|
-|HC-06 Bluetooth Module|1|$32.00||Generic Version will work also|
+|Jetson Nano|1|$99.00|https://www.nvidia.com/en-us/autonomous-machines/jetson-store/#jetson-nano|The 2GB version is also |
+|Arduino Micro|1|$32.00|https://store.arduino.cc/usa/arduino-micro|Generic Version will work also|
+|HC-06 Bluetooth Module|1|$11.00|https://www.amazon.com/Wireless-Bluetooth-Receiver-Transceiver-Transmitter/dp/B01MQKX7VP/ref=asc_df_B01MQKX7VP/?tag=hyprod-20&linkCode=df0&hvadid=167146065113&hvpos=&hvnetw=g&hvrand=16656197411905567539&hvpone=&hvptwo=&hvqmt=&hvdev=c&hvdvcmdl=&hvlocint=&hvlocphy=1027158&hvtargid=pla-362748457327&psc=1|Generic Version will work also|
 
 ### Camera(s) <a name="intro"></a>
 ||||||
@@ -70,6 +70,7 @@ This section lists the parts needed to build the MSU RACECAR. After you have rec
 |Part | Quantity | Cost | URL | Note |
 |Chassis|1|$275|| Purchasing a different chassis may make some of the 3-D printed parts unusable|
 |M3 x 6 Machine Screws|4||||
+|M5 x 6 Machine Screws|4||||
 |20 x 40 Perfboard|1|$3|||
 |LM2596 DC-DC Buck Converter Step Down Module|1|14.95|https://www.amazon.com/LM2596-Converter-Module-Supply-1-23V-30V/dp/B008BHBEE0|The actual individual part is much cheaper but is often sold only in packs of 5-10|
 ## Hardware Setup
