@@ -70,7 +70,7 @@ This section lists the parts needed to build the MSU RACECAR. After you have rec
 |Part | Quantity | Cost | URL | Note |
 |Chassis|1|$275|| Purchasing a different chassis may make some of the 3-D printed parts unusable|
 |M3 x 6 Machine Screws|4||||
-|M5 x 6 Machine Screws|4||||
+|M5 x 6 Machine Screws|1||||
 |20 x 40 Perfboard|1|$3|||
 |LM2596 DC-DC Buck Converter Step Down Module|1|14.95|https://www.amazon.com/LM2596-Converter-Module-Supply-1-23V-30V/dp/B008BHBEE0|The actual individual part is much cheaper but is often sold only in packs of 5-10|
 ## Hardware Setup
@@ -82,22 +82,29 @@ This section lists the parts needed to build the MSU RACECAR. After you have rec
 |<img width="200px"  src="images/image3.jpg"/><img width="200px"  src="images/image11.jpg"/>|Acts as a mount for the 2 3D Sensing Cameras|No|.28mm| 150mm/s|
 |<img width="200px"  src="images/image8.jpg"/>|Screws into the rear underside of the Jetson nano, while the front side rests on a piece of foam on top of the ESC|Yes|.28mm| 150mm/s|
 |<img width="200px"  src="images/image9.jpg"/><img width="200px"  src="images/image10.jpg"/>|Screws into the body of the ESC and attaches to the sides of the arduinos perf board|Yes|.28mm| 150mm/s|
-|<img width="200px"  src="images/image12.jpeg"/>|Acts to extend the head of a Nmm bolt ```A small hole must be drilled in the frame for the bolt to pass through```|Yes|.28mm| 150mm/s|
+|<img width="200px"  src="images/image12.jpeg"/>|Acts to extend the head of a Nmm bolt ```A small hole must be drilled in the frame for the bolt to pass through```|No|.28mm| 150mm/s|
 ### Wiring
 
-<img width="200px"  src="images/image12.jpg" alt="Wiring Diagram"/>
+<img width="200px"  src="images/image13.jpg" alt="Wiring Diagram"/>
 
 In order to simplify powering the nano I chose to pull power from the RC battery to a LM2596 as shown above. 
 
 <img width="200px"  src="images/image12.jpg" alt="Wiring Diagram"/>
+Connect the Arduino micro and the HC06 as defined above if the references aren't clear in the photos the pen definitions can be found at the top of the arduino [script](src/roboguide/arduino/src/src.ino)
 
 ## Software Setup
 ### ROS
 Follow the basic instructions to install Ubuntu 16.04. This requires an at least 16 GB SD card so have one on hand before starting. 
-Once that process is complete, finish by installing ROS kinetic with the provided  instructions.
+Once that process is complete, finish by installing ROS melodic with the provided  instructions.
 
 ``` Only the base version is necessary but if you would like to use the GUI tools in my experience they will run fine.```
 
+Once ROS is installed Install the ROS package dependencies defined in the installs.md file.
+
+Librealsense is also necessary for using the realsense camera package. Some of the documentation says that it is installed by default but that hasn't worked in my case so I recommend you follow this [tutorial]() to install it separately.
+```You can test this installation using the realsense-viewer command```
+
+After the dependencies have been installed and you cloned the gate repository as a package into your workspace as defined [here](http://wiki.ros.org/catkin/Tutorials/create_a_workspace) run the catkin_make
 ### Arduino
 After which you should clone the git repo into the root of your device. Running the ```./setup.sh``` installation script in the GitHub will install additional dependencies for ROS. Run ```ls /dev/tty*``` to find which port your arduino is attached on. cd into [Moonbear/src/roboguide/arduino/]() and run ```ino build; ino upload -p ${port}```
 
@@ -111,4 +118,4 @@ For either mode it's necessary to power the computer since there is no on or off
 ### Manual 
 Turning on the setup without connecting *** will startup the car in bluetooth mode. Then launch the App and start driving
 ### Autonomous 
-In a new terminal run ```roslaunch rc.launch``` to run the ROS control. After it succesfully connects to the arduino run ```roslaunch mapping.launch``` on either the host machine to run and map the area. 
+ In a new terminal run ```roslaunch rc.launch``` to run the ROS control. After it succesfully connects to the arduino run ```roslaunch mapping.launch``` on either the host machine to run exploration and mapping of the area. The car will stop running when it runs out of search areas
