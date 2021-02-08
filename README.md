@@ -90,7 +90,7 @@ This section lists the parts needed to build the MSU RACECAR. After you have rec
 In order to simplify powering the nano I chose to pull power from the RC battery to a LM2596 as shown above. 
 
 <img width="200px"  src="images/image12.jpg" alt="Wiring Diagram"/>
-Connect the Arduino micro and the HC06 as defined above if the references aren't clear in the photos the pen definitions can be found at the top of the arduino [script](src/roboguide/arduino/src/src.ino)
+Connect the Arduino micro and the HC06 as defined above if the references aren't clear in the photos, the pin definitions can be found at the top of the arduino [script](src/roboguide/arduino/src/src.ino)
 
 ## Software Setup
 ### ROS
@@ -116,6 +116,6 @@ For either mode it's necessary to power the computer since there is no on or off
 
 ```Though this didn't raise issues during development you should shut down the nano separately via SSH first```
 ### Manual 
-Turning on the setup without connecting *** will startup the car in bluetooth mode. Then launch the App and start driving
+Turning on the setup without connecting **Bluetooth Mode Jumper** will startup the car in bluetooth mode. Then launch the App and start driving.
 ### Autonomous 
  In a new terminal run ```roslaunch rc.launch``` to run the ROS control. After it succesfully connects to the arduino run ```roslaunch mapping.launch``` on either the host machine to run exploration and mapping of the area. The car will stop running when it runs out of search areas
