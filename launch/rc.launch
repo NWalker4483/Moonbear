@@ -9,4 +9,6 @@
 
 <node pkg="tf" type="static_transform_publisher" name="scan_base_link" args="0 0 0 0 0 0 /base_link /laser_frame 100"/> 
 
+<include file="$(find roboguide)/launch/sense.launch" /> 
+
 </launch>
