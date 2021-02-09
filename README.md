@@ -62,8 +62,8 @@ This section lists the parts needed to build the MSU RACECAR. After you have rec
 ||||||
 |---|---|---|---|---|
 |Part | Quantity | Cost | URL | Note |
-|TL-WN722N|1|$16.99|||
-|USB Hub|1||||
+|TL-WN722N|1|$16.99|https://www.tp-link.com/us/home-networking/usb-adapter/tl-wn722n/||
+|USB Hub|1|$12.99|https://www.amazon.com/Anker-Extended-MacBook-Surface-Notebook/dp/B07L32B9C2/ref=asc_df_B07L32B9C2/?tag=hyprod-20&linkCode=df0&hvadid=320048880417&hvpos=&hvnetw=g&hvrand=1424088810660995306&hvpone=&hvptwo=&hvqmt=&hvdev=c&hvdvcmdl=&hvlocint=&hvlocphy=1027158&hvtargid=pla-621842602315&psc=1&tag=&ref=&adgrpid=61389685902&hvpone=&hvptwo=&hvadid=320048880417&hvpos=&hvnetw=g&hvrand=1424088810660995306&hvqmt=&hvdev=c&hvdvcmdl=&hvlocint=&hvlocphy=1027158&hvtargid=pla-621842602315||
 ### Assembly Hardware + Misc <a name="intro"></a>
 ||||||
 |---|---|---|---|---|
@@ -90,7 +90,8 @@ This section lists the parts needed to build the MSU RACECAR. After you have rec
 In order to simplify powering the nano I chose to pull power from the RC battery to a LM2596 as shown above. 
 
 <img width="200px"  src="images/image12.jpg" alt="Wiring Diagram"/>
-Connect the Arduino micro and the HC06 as defined above if the references aren't clear in the photos, the pin definitions can be found at the top of the arduino [script](src/roboguide/arduino/src/src.ino)
+
+Connect the Arduino micro and the HC-06 as defined above if the references aren't clear in the photos, the pin definitions can be found at the top of the arduino [script](src/roboguide/arduino/src/src.ino)
 
 ## Software Setup
 ### ROS
@@ -98,10 +99,9 @@ Connect the Arduino micro and the HC06 as defined above if the references aren't
    Follow the basic instructions to install Ubuntu 16.04. This requires an at least 16 GB SD card so have one on hand before starting. 
    Once that process is complete, finish by installing ROS melodic with the provided instructions.
 #### Method 2: 
-   The JetsonHacksNano repo provides a set a script that will likely be very useful for you and future development I personally feel uncomfortable using them as a matter of principle but they have worked in the past if you choose to use them. https://github.com/JetsonHacksNano/installROS
+   Install from the JetsonHacksNano repo. https://github.com/JetsonHacksNano/installROS
 
-
-``` Only the base version is necessary but if you would like to use the GUI tools in my experience they will run fine.```
+``` Only the base version is necessary but if you would like to use the GUI tools like rviz in my experience they will run fine.```
 
 Once ROS is installed. Install these ROS package dependencies
 ```
@@ -116,12 +116,12 @@ ros-melodic-rosserial \
 ros-melodic-slam-gmapping 
 ```
 
-Librealsense is also necessary for using the realsense camera package. Some of the documentation says that it is installed by default but that hasn't worked in my case so I recommend you follow this [tutorial]() to install it separately.
+Librealsense is also necessary for using the realsense camera package. Some of the documentation says that it is installed by default but that hasn't worked in my case so I recommend you follow this [tutorial](https://github.com/IntelRealSense/librealsense) to install it separately.
 ```You can test this installation using the realsense-viewer command```
 
-After the dependencies have been installed and you cloned the gate repository as a package into your workspace as defined [here](http://wiki.ros.org/catkin/Tutorials/create_a_workspace) run the catkin_make
+After the dependencies have been installed and you cloned the gate repository as a package into your workspace as defined [here](http://wiki.ros.org/catkin/Tutorials/create_a_workspace) run the catkin_make command and run ```/devel/setup.bash```
 ### Arduino
-After which you should clone the git repo into the root of your device. Running the ```./setup.sh``` installation script in the GitHub will install additional dependencies for ROS. Run ```ls /dev/tty*``` to find which port your arduino is attached on. cd into [Moonbear/src/roboguide/arduino/]() and run ```ino build; ino upload -p ${port}```
+After which you should clone the git repo into the root of your device. Running the ```./setup.sh``` installation script in the GitHub will install additional dependencies for ROS. Run ```ls /dev/tty*``` to find which port your arduino is attached on. cd into [Moonbear/src/roboguide/arduino/](src/roboguide/arduino/) and run ```ino build; ino upload -p ${port}```
 
 ### Bluetooth
 Just install the Joy Bluetooth Commander from the play store and pair to the HC-06 device within the app by moving the joystick. 
@@ -134,3 +134,4 @@ For either mode it's necessary to power the computer since there is no on or off
 Turning on the setup without connecting **Bluetooth Mode Jumper** will startup the car in bluetooth mode. Then launch the App and start driving.
 ### Autonomous 
  In a new terminal run ```roslaunch rc.launch``` to run the ROS control. After it succesfully connects to the arduino run ```roslaunch mapping.launch``` on either the host machine to run exploration and mapping of the area. The car will stop running when it runs out of search areas
+## Bugs
