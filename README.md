@@ -117,9 +117,10 @@ ros-melodic-slam-gmapping
 ```
 
 Librealsense is also necessary for using the realsense camera package. Some of the documentation says that it is installed by default but that hasn't worked in my case so I recommend you follow this [tutorial](https://github.com/IntelRealSense/librealsense) to install it separately.
+
 ```You can test this installation using the realsense-viewer command```
 
-After the dependencies have been installed and you cloned the gate repository as a package into your workspace as defined [here](http://wiki.ros.org/catkin/Tutorials/create_a_workspace) run the catkin_make command and run ```/devel/setup.bash```
+After the dependencies have been installed and you cloned this repository as a package into your workspace as described [here](http://wiki.ros.org/catkin/Tutorials/create_a_workspace) run the catkin_make command and run ```source /devel/setup.bash```
 ### Arduino
 After which you should clone the git repo into the root of your device. Running the ```./setup.sh``` installation script in the GitHub will install additional dependencies for ROS. Run ```ls /dev/tty*``` to find which port your arduino is attached on. cd into [Moonbear/src/roboguide/arduino/](src/roboguide/arduino/) and run ```ino build; ino upload -p ${port}```
 
