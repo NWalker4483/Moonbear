@@ -24,8 +24,6 @@
 #define WHEEL_DIAMETER .12   // m
 #define PI 3.1415926535897932384626433832795
 /////////////////////////////
-//SimpleKalmanFilter simpleKalmanFilter(.25, .25, 0.001);
-/////////////////////////////
 #define LoopTime 100 // 10 Hz
 ///////////////
 #define    STX          0x02
@@ -33,7 +31,6 @@
 //////////////
 
 #include <Servo.h>
-
 #include <SoftwareSerial.h>
 SoftwareSerial BT_Serial(11,10); // RX | TX
 
