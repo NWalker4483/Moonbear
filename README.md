@@ -107,13 +107,15 @@ Once ROS is installed. Install these ROS package dependencies
 ```
 sudo apt-get install \ 
 ros-melodic-usb-cam \
+ros-melodic-compressed-image-transport \
 ros-melodic-joy \
 ros-melodic-joy-teleop-twist \
-ros-melodic-compressed-image-transport 
 ros-melodic-openni-launch \
 ros-melodic-rosserial-arduino \ 
 ros-melodic-rosserial \
-ros-melodic-slam-gmapping 
+ros-melodic-slam-gmapping \
+ros-melodic-amcl \  
+ros-melodic-move-base 
 ```
 
 Librealsense is also necessary for using the realsense camera package. Some of the documentation says that it is installed by default but that hasn't worked in my case so I recommend you follow this [tutorial](https://github.com/IntelRealSense/librealsense) to install it separately.
