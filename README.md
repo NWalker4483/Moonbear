@@ -94,12 +94,27 @@ Connect the Arduino micro and the HC06 as defined above if the references aren't
 
 ## Software Setup
 ### ROS
-Follow the basic instructions to install Ubuntu 16.04. This requires an at least 16 GB SD card so have one on hand before starting. 
-Once that process is complete, finish by installing ROS melodic with the provided  instructions.
+#### Method 1: 
+   Follow the basic instructions to install Ubuntu 16.04. This requires an at least 16 GB SD card so have one on hand before starting. 
+   Once that process is complete, finish by installing ROS melodic with the provided instructions.
+#### Method 2: 
+   The JetsonHacksNano repo provides a set a script that will likely be very useful for you and future development I personally feel uncomfortable using them as a matter of principle but they have worked in the past if you choose to use them. https://github.com/JetsonHacksNano/installROS
+
 
 ``` Only the base version is necessary but if you would like to use the GUI tools in my experience they will run fine.```
 
-Once ROS is installed Install the ROS package dependencies defined in the installs.md file.
+Once ROS is installed. Install these ROS package dependencies
+```
+sudo apt-get install \ 
+ros-melodic-usb-cam \
+ros-melodic-joy \
+ros-melodic-joy-teleop-twist \
+ros-melodic-compressed-image-transport 
+ros-melodic-openni-launch \
+ros-melodic-rosserial-arduino \ 
+ros-melodic-rosserial \
+ros-melodic-slam-gmapping 
+```
 
 Librealsense is also necessary for using the realsense camera package. Some of the documentation says that it is installed by default but that hasn't worked in my case so I recommend you follow this [tutorial]() to install it separately.
 ```You can test this installation using the realsense-viewer command```
@@ -109,7 +124,7 @@ After the dependencies have been installed and you cloned the gate repository as
 After which you should clone the git repo into the root of your device. Running the ```./setup.sh``` installation script in the GitHub will install additional dependencies for ROS. Run ```ls /dev/tty*``` to find which port your arduino is attached on. cd into [Moonbear/src/roboguide/arduino/]() and run ```ino build; ino upload -p ${port}```
 
 ### Bluetooth
-Just install the Joy Bluetooth Commander from the play store and pair to the HC-06 device within the app
+Just install the Joy Bluetooth Commander from the play store and pair to the HC-06 device within the app by moving the joystick. 
 
 ## Startup
 For either mode it's necessary to power the computer since there is no on or off switch manually plugging and unplugging the RC battery cable is the best way to go about turning the system on and off.
