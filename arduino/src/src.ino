@@ -156,7 +156,7 @@ Servo Steering;
 void set_Steering(int _angle){
   Steering.write(_angle);
   current_steering_angle = _angle; 
-  }
+}
   
 void Brake()
 {                         // Disengages the brake on the ESC
