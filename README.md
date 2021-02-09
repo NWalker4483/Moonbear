@@ -122,7 +122,7 @@ Librealsense is also necessary for using the realsense camera package. Some of t
 
 After the dependencies have been installed and you cloned this repository as a package into your workspace as described [here](http://wiki.ros.org/catkin/Tutorials/create_a_workspace) run the catkin_make command and run ```source /devel/setup.bash```
 ### Arduino
-After which you should clone the git repo into the root of your device. Running the ```./setup.sh``` installation script in the GitHub will install additional dependencies for ROS. Run ```ls /dev/tty*``` to find which port your arduino is attached on. cd into [Moonbear/src/roboguide/arduino/](src/roboguide/arduino/) and run ```ino build; ino upload -p ${port}```
+ Run ```ls /dev/tty*``` to find which port your arduino is attached on. cd into [Moonbear/src/roboguide/arduino/](src/roboguide/arduino/) and run ```ino build; ino upload -p ${port}```. This uploads the script to your arduino board.
 
 ### Bluetooth
 Just install the Joy Bluetooth Commander from the play store and pair to the HC-06 device within the app by moving the joystick. 
