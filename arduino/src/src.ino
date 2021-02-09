@@ -38,11 +38,8 @@
 SoftwareSerial BT_Serial(11,10); // RX | TX
 
 volatile float velocity_estimate = 0;
-//float goal_velocity = 0;
-//float velocityError = 0;
-//float lastVelocityError = 0;
 float current_throttle_setting = 0;
-
+float current_steering_angle = 0;
 /////// Bluetooth stuff I aint write this LOL
 byte cmd[8] = {0, 0, 0, 0, 0, 0, 0, 0}; // bytes received
 
@@ -158,6 +155,7 @@ Servo Steering;
 
 void set_Steering(int _angle){
   Steering.write(_angle);
+  current_steering_angle = _angle; 
   }
   
 void Brake()
@@ -201,7 +199,7 @@ void ReadSerialCommands()
       setting = parseIntFast(4);
       set_Steering(setting);
       Serial.print("Set Steering to ");
-     // Serial.println(current_steering_angle);
+      Serial.println(current_steering_angle);
       break;
     }
     Serial.flush();
@@ -284,43 +282,13 @@ void loop()
     break;
   }
 }
-//https://answers.ros.org/question/73627/how-to-increase-rosserial-buffer-size/
-//http://andrewjkramer.net/motor-encoders-arduino/
 //////////////////////
-/*
-void getMotorData(unsigned long time)
-{
-  double delta_time = double(time) / 1000;                                     // must be in seconds for these formulas
-  rpm = (60 * (double(pulses - oldpulses) / ENCODER_RESOLUTION)) / delta_time; // 60 is to convert from seconds to minutes
-  oldpulses = pulses;
-  // store your measured speed setting in this variable
-  actual_throttle = map(rpm, 0, PERCENT_100_RPM, 0, 100); // 0 :-: 100
-  actual_throttle = actual_throttle * (rpm / abs(rpm));   // -100 :-: 100
-  //basic velocity inputs
-  linear_velocity = (rpm * (WHEEL_DIAMETER / 100.0) * PI) / delta_time; // m/s from rear wheels
-  //current_steering_angle;                                               // must be in radians ... I think
-  //first get the theta update
-  //angular_velocity = linear_velocity * (tan(current_steering_angle) / WHEEL_BASE);
-}*/
 
 void SendDebugInfo()
 { // TODO: Printing all this data causes a large delay in the speed updater
   Serial.print("THROTTLE SETTING: ");
   Serial.println(current_throttle_setting);
   Serial.print("STEERING SETTING: ");
-  //Serial.println(current_steering_angle);
-  Serial.print("RPM: ");
- // Serial.println(rpm);
-  /*
-  Serial.print("LINEAR VELOCITY: ");
-  Serial.print(linear_velocity);
-  Serial.println(" m/s");
-  Serial.print("ANGULAR VELOCITY: ");
-  Serial.print(angular_velocity);
-  Serial.println(" m/s");  
-  Serial.print("PULSES SINCE LAST UPDATE: ");
-  Serial.println(pulses);*/
-  Serial.print("TOTAL PULSES: ");
-//  Serial.println(abs(oldpulses));
+  Serial.println(current_steering_angle);
   Serial.print("\n");
 }
