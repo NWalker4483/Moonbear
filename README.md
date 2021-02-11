@@ -79,9 +79,9 @@ This section lists the parts needed to build the MSU RACECAR. After you have rec
 ||||||
 |---|---|---|---|---|
 | Image(s) | Purpose | Supports Needed | Layer Height | Printspeed |
-|<img width="200px"  src="images/image3.jpg"/><img width="200px"  src="images/image11.jpg"/>|Acts as a mount for the 2 3D Sensing Cameras|No|.28mm| 150mm/s|
+|<img width="200px"  src="images/image3.jpg"/><img width="200px"  src="images/image11.jpg"/>|Acts as a mount for the 2 3D Sensing Cameras. This piece is screwed directly into the front frame of the car as shown in pictures|No|.28mm| 150mm/s|
 |<img width="200px"  src="images/image8.jpg"/>|Screws into the rear underside of the Jetson nano, while the front side rests on a piece of foam on top of the ESC|Yes|.28mm| 150mm/s|
-|<img width="200px"  src="images/image9.jpg"/><img width="200px"  src="images/image10.jpg"/>|Screws into the body of the ESC and attaches to the sides of the arduinos perf board|Yes|.28mm| 150mm/s|
+|<img width="200px"  src="images/image9.jpg"/><img width="200px"  src="images/image10.jpg"/>|Screws into the body of the ESC and attaches to the sides of the arduinos perf board. These pieces are designed specifically for this frame and should slide in place as shown|Yes|.28mm| 150mm/s|
 |<img width="200px"  src="images/image12.jpeg"/>|Acts to extend the head of a Nmm bolt ```A small hole must be drilled in the frame for the bolt to pass through```|No|.28mm| 150mm/s|
 ### Wiring
 
@@ -104,6 +104,7 @@ Connect the Arduino micro and the HC-06 as defined above if the references aren'
 ``` Only the base version is necessary but if you would like to use the GUI tools like rviz in my experience they will run fine.```
 
 Once ROS is installed. Install these ROS package dependencies
+
 ```
 sudo apt-get install \ 
 ros-melodic-usb-cam \
@@ -120,7 +121,6 @@ ros-melodic-move-base
 
 Librealsense is also necessary for using the realsense camera package. Some of the documentation says that it is installed by default but that hasn't worked in my case so I recommend you follow this [tutorial](https://github.com/IntelRealSense/librealsense) to install it separately.
 
-```You can test this installation using the realsense-viewer command```
 
 After the dependencies have been installed and you cloned this repository as a package into your workspace as described [here](http://wiki.ros.org/catkin/Tutorials/create_a_workspace) run the catkin_make command and run ```source /devel/setup.bash```
 ### Arduino
@@ -137,4 +137,13 @@ For either mode it's necessary to power the computer since there is no on or off
 Turning on the setup without connecting **Bluetooth Mode Jumper** will startup the car in bluetooth mode. Then launch the App and start driving.
 ### Autonomous 
  In a new terminal run ```roslaunch rc.launch``` to run the ROS control. After it succesfully connects to the arduino run ```roslaunch mapping.launch``` on either the host machine to run exploration and mapping of the area. The car will stop running when it runs out of search areas
+## Sanity Checks
+#### librealsense
+
+* Once librealsense is installed properly you should be able to run the realsense-viewer command in terminal. This will bring up a window that allows you to view the data coming from either camera.
+#### ROS Nodes 
+<img src="" alt="">
+
 ## Bugs
+#### No Realsense device found when the realsense is plugged in:
+* Check that the 
