@@ -95,11 +95,13 @@ Connect the Arduino micro and the HC-06 as defined above if the references aren'
 
 ## Software Setup
 ### ROS
+* Follow the basic instructions to install Ubuntu 18.04. This requires an at least 16 GB SD card so have one on hand before starting. 
+
+* Once that process is complete, finish by installing ROS melodic with one of the methods below.
 #### Method 1: 
-   Follow the basic instructions to install Ubuntu 16.04. This requires an at least 16 GB SD card so have one on hand before starting. 
-   Once that process is complete, finish by installing ROS melodic with the provided instructions.
+* Follow the instructions to install ROS Melodic Desktop. http://wiki.ros.org/melodic/Installation/Ubuntu
 #### Method 2: 
-   Install from the JetsonHacksNano repo. https://github.com/JetsonHacksNano/installROS
+* Install from the JetsonHacksNano repo. https://github.com/JetsonHacksNano/installROS
 
 ``` Only the base version is necessary but if you would like to use the GUI tools like rviz in my experience they will run fine.```
 
@@ -107,8 +109,7 @@ Once ROS is installed. Install these ROS package dependencies
 
 ```
 sudo apt-get install \ 
-ros-melodic-usb-cam \
-ros-melodic-compressed-image-transport \
+ros-melodic-realsense2-camera \
 ros-melodic-joy \
 ros-melodic-joy-teleop-twist \
 ros-melodic-openni-launch \
@@ -116,13 +117,16 @@ ros-melodic-rosserial-arduino \
 ros-melodic-rosserial \
 ros-melodic-slam-gmapping \
 ros-melodic-amcl \  
-ros-melodic-move-base 
+ros-melodic-move-base \
+ros-melodic-robot-upstart \  
+ros-melodic-pointcloud-to-laserscan
 ```
 
-Librealsense is also necessary for using the realsense camera package. Some of the documentation says that it is installed by default but that hasn't worked in my case so I recommend you follow this [tutorial](https://github.com/IntelRealSense/librealsense) to install it separately.
+```Librealsense is necessary for using the **realsense2-camera** package. Some of the documentation says that it is installed by default but that hasn't worked in my case so I recommend you follow this [tutorial](https://github.com/IntelRealSense/librealsense) to install it separately.```
 
+After the dependencies have been installed clone this repository into your ```workspace/src``` folder as a package and run ```catkin_make;source /devel/setup.bash```
 
-After the dependencies have been installed and you cloned this repository as a package into your workspace as described [here](http://wiki.ros.org/catkin/Tutorials/create_a_workspace) run the catkin_make command and run ```source /devel/setup.bash```
+A tutorial on how to make a Ross workspace can be found [here](http://wiki.ros.org/catkin/Tutorials/create_a_workspace)
 ### Arduino
  Run ```ls /dev/tty*``` to find which port your arduino is attached on. cd into [arduino/](arduino/) and run ```ino build; ino upload -p ${port}```. This uploads the script to your arduino board.
 
