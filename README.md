@@ -44,45 +44,45 @@ This section lists the parts needed to build the MSU RACECAR. After you have rec
 ```Disclaimer: Most of the URLs are from the OEM. You can probably find it cheaper elsewhere, e.g. Amazon.```
 
 ### Computing Modules (?) <a name="intro"></a>
-||||||
-|---|---|---|---|---|
-|Part | Quantity | Cost | URL | Note |
-|Jetson Nano|1|$99.00|https://www.nvidia.com/en-us/autonomous-machines/jetson-store/#jetson-nano|The 2GB version is also |
-|Arduino Micro|1|$32.00|https://store.arduino.cc/usa/arduino-micro|Generic Version will work also|
-|HC-06 Bluetooth Module|1|$11.00|https://www.amazon.com/Wireless-Bluetooth-Receiver-Transceiver-Transmitter/dp/B01MQKX7VP/ref=asc_df_B01MQKX7VP/?tag=hyprod-20&linkCode=df0&hvadid=167146065113&hvpos=&hvnetw=g&hvrand=16656197411905567539&hvpone=&hvptwo=&hvqmt=&hvdev=c&hvdvcmdl=&hvlocint=&hvlocphy=1027158&hvtargid=pla-362748457327&psc=1|Generic Version will work also|
+|                        |          |        |                                                                                                                                                                                                                                                                                                                |                                |
+| ---------------------- | -------- | ------ | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------ |
+| Part                   | Quantity | Cost   | URL                                                                                                                                                                                                                                                                                                            | Note                           |
+| Jetson Nano            | 1        | $99.00 | https://www.nvidia.com/en-us/autonomous-machines/jetson-store/#jetson-nano                                                                                                                                                                                                                                     | The 2GB version is also        |
+| Arduino Micro          | 1        | $32.00 | https://store.arduino.cc/usa/arduino-micro                                                                                                                                                                                                                                                                     | Generic Version will work also |
+| HC-06 Bluetooth Module | 1        | $11.00 | https://www.amazon.com/Wireless-Bluetooth-Receiver-Transceiver-Transmitter/dp/B01MQKX7VP/ref=asc_df_B01MQKX7VP/?tag=hyprod-20&linkCode=df0&hvadid=167146065113&hvpos=&hvnetw=g&hvrand=16656197411905567539&hvpone=&hvptwo=&hvqmt=&hvdev=c&hvdvcmdl=&hvlocint=&hvlocphy=1027158&hvtargid=pla-362748457327&psc=1 | Generic Version will work also |
 
 ### Camera(s) <a name="intro"></a>
-||||||
-|---|---|---|---|---|
-|Part | Quantity | Cost | URL | Note |
-|INTEL D435|1|$179.00|https://store.intelrealsense.com/buy-intel-realsense-depth-camera-d435.html?cid=sem&source=sa360&campid=2021_q1_egi_us_ntgrs_nach_revs_text-link_brand_bmm_desk_realsense-shopping-ad_o-2fj5v_google&ad_group=RealSense+Shopping+Ads&intel_term=PRODUCT_GROUP&sa360id=92700050119513696&gclid=CjwKCAiAjeSABhAPEiwAqfxURflhmEFdvpKcQLn3MmvM4kGXbQuXrnXNFoWgEWSZqakCRxl8dq7sDRoCzKAQAvD_BwE&gclsrc=aw.ds||
-|INTEL T265|1|$199.00|https://store.intelrealsense.com/buy-intel-realsense-tracking-camera-t265.html?cid=sem&source=sa360&campid=2021_q1_egi_us_ntgrs_nach_revs_text-link_brand_bmm_desk_realsense-shopping-ad_o-2fj5v_google&ad_group=RealSense+Shopping+Ads&intel_term=PRODUCT_GROUP&sa360id=92700050119513705&gclid=CjwKCAiAjeSABhAPEiwAqfxURTS6hqR8Fg53Ss-XBovh-1NOrRv66u4cPTb46CTJMK7m4en5JObQYhoCp7oQAvD_BwE&gclsrc=aw.ds||
+|            |          |         |                                                                                                                                                                                                                                                                                                                                                                                                           |      |
+| ---------- | -------- | ------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---- |
+| Part       | Quantity | Cost    | URL                                                                                                                                                                                                                                                                                                                                                                                                       | Note |
+| INTEL D435 | 1        | $179.00 | https://store.intelrealsense.com/buy-intel-realsense-depth-camera-d435.html?cid=sem&source=sa360&campid=2021_q1_egi_us_ntgrs_nach_revs_text-link_brand_bmm_desk_realsense-shopping-ad_o-2fj5v_google&ad_group=RealSense+Shopping+Ads&intel_term=PRODUCT_GROUP&sa360id=92700050119513696&gclid=CjwKCAiAjeSABhAPEiwAqfxURflhmEFdvpKcQLn3MmvM4kGXbQuXrnXNFoWgEWSZqakCRxl8dq7sDRoCzKAQAvD_BwE&gclsrc=aw.ds    |      |
+| INTEL T265 | 1        | $199.00 | https://store.intelrealsense.com/buy-intel-realsense-tracking-camera-t265.html?cid=sem&source=sa360&campid=2021_q1_egi_us_ntgrs_nach_revs_text-link_brand_bmm_desk_realsense-shopping-ad_o-2fj5v_google&ad_group=RealSense+Shopping+Ads&intel_term=PRODUCT_GROUP&sa360id=92700050119513705&gclid=CjwKCAiAjeSABhAPEiwAqfxURTS6hqR8Fg53Ss-XBovh-1NOrRv66u4cPTb46CTJMK7m4en5JObQYhoCp7oQAvD_BwE&gclsrc=aw.ds |      |
 
 ### Wi-Fi <a name="intro"></a>
-||||||
-|---|---|---|---|---|
-|Part | Quantity | Cost | URL | Note |
-|TL-WN722N|1|$16.99|https://www.tp-link.com/us/home-networking/usb-adapter/tl-wn722n/||
-|USB Hub|1|$12.99|https://www.amazon.com/Anker-Extended-MacBook-Surface-Notebook/dp/B07L32B9C2/ref=asc_df_B07L32B9C2/?tag=hyprod-20&linkCode=df0&hvadid=320048880417&hvpos=&hvnetw=g&hvrand=1424088810660995306&hvpone=&hvptwo=&hvqmt=&hvdev=c&hvdvcmdl=&hvlocint=&hvlocphy=1027158&hvtargid=pla-621842602315&psc=1&tag=&ref=&adgrpid=61389685902&hvpone=&hvptwo=&hvadid=320048880417&hvpos=&hvnetw=g&hvrand=1424088810660995306&hvqmt=&hvdev=c&hvdvcmdl=&hvlocint=&hvlocphy=1027158&hvtargid=pla-621842602315||
+|           |          |        |                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              |      |
+| --------- | -------- | ------ | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---- |
+| Part      | Quantity | Cost   | URL                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          | Note |
+| TL-WN722N | 1        | $16.99 | https://www.tp-link.com/us/home-networking/usb-adapter/tl-wn722n/                                                                                                                                                                                                                                                                                                                                                                                                                            |      |
+| USB Hub   | 1        | $12.99 | https://www.amazon.com/Anker-Extended-MacBook-Surface-Notebook/dp/B07L32B9C2/ref=asc_df_B07L32B9C2/?tag=hyprod-20&linkCode=df0&hvadid=320048880417&hvpos=&hvnetw=g&hvrand=1424088810660995306&hvpone=&hvptwo=&hvqmt=&hvdev=c&hvdvcmdl=&hvlocint=&hvlocphy=1027158&hvtargid=pla-621842602315&psc=1&tag=&ref=&adgrpid=61389685902&hvpone=&hvptwo=&hvadid=320048880417&hvpos=&hvnetw=g&hvrand=1424088810660995306&hvqmt=&hvdev=c&hvdvcmdl=&hvlocint=&hvlocphy=1027158&hvtargid=pla-621842602315 |      |
 ### Assembly Hardware + Misc <a name="intro"></a>
-||||||
-|---|---|---|---|---|
-|Part | Quantity | Cost | URL | Note |
-|Chassis|1|$275|| Purchasing a different chassis may make some of the 3-D printed parts unusable|
-|M3 x 6 Machine Screws|4||||
-|M5 x 6 Machine Screws|1||||
-|20 x 40 Perfboard|1|$3|||
-|LM2596 DC-DC Buck Converter Step Down Module|1|14.95|https://www.amazon.com/LM2596-Converter-Module-Supply-1-23V-30V/dp/B008BHBEE0|The actual individual part is much cheaper but is often sold only in packs of 5-10|
+|                                              |          |       |                                                                               |                                                                                    |
+| -------------------------------------------- | -------- | ----- | ----------------------------------------------------------------------------- | ---------------------------------------------------------------------------------- |
+| Part                                         | Quantity | Cost  | URL                                                                           | Note                                                                               |
+| Chassis                                      | 1        | $275  |                                                                               | Purchasing a different chassis may make some of the 3-D printed parts unusable     |
+| M3 x 6 Machine Screws                        | 4        |       |                                                                               |                                                                                    |
+| M5 x 6 Machine Screws                        | 1        |       |                                                                               |                                                                                    |
+| 20 x 40 Perfboard                            | 1        | $3    |                                                                               |                                                                                    |
+| LM2596 DC-DC Buck Converter Step Down Module | 1        | 14.95 | https://www.amazon.com/LM2596-Converter-Module-Supply-1-23V-30V/dp/B008BHBEE0 | The actual individual part is much cheaper but is often sold only in packs of 5-10 |
 ## Hardware Setup
 ### 3D Printed Parts 
 ```All Parts where 3D printed on an Ender 3```
-||||||
-|---|---|---|---|---|
-| Image(s) | Purpose | Supports Needed | Layer Height | Printspeed |
-|<img width="200px"  src="images/image3.jpg"/><img width="200px"  src="images/image11.jpg"/>|Acts as a mount for the 2 3D Sensing Cameras. This piece is screwed directly into the front frame of the car as shown in pictures|No|.28mm| 150mm/s|
-|<img width="200px"  src="images/image8.jpg"/>|Screws into the rear underside of the Jetson nano, while the front side rests on a piece of foam on top of the ESC|Yes|.28mm| 150mm/s|
-|<img width="200px"  src="images/image9.jpg"/><img width="200px"  src="images/image10.jpg"/>|Screws into the body of the ESC and attaches to the sides of the arduinos perf board. These pieces are designed specifically for this frame and should slide in place as shown|Yes|.28mm| 150mm/s|
-|<img width="200px"  src="images/image12.jpeg"/>|Acts to extend the head of a Nmm bolt ```A small hole must be drilled in the frame for the bolt to pass through```|No|.28mm| 150mm/s|
+|                                                                                             |                                                                                                                                                                                |                 |              |            |
+| ------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | --------------- | ------------ | ---------- |
+| Image(s)                                                                                    | Purpose                                                                                                                                                                        | Supports Needed | Layer Height | Printspeed |
+| <img width="200px"  src="images/image3.jpg"/><img width="200px"  src="images/image11.jpg"/> | Acts as a mount for the 2 3D Sensing Cameras. This piece is screwed directly into the front frame of the car as shown in pictures                                              | No              | .28mm        | 150mm/s    |
+| <img width="200px"  src="images/image8.jpg"/>                                               | Screws into the rear underside of the Jetson nano, while the front side rests on a piece of foam on top of the ESC                                                             | Yes             | .28mm        | 150mm/s    |
+| <img width="200px"  src="images/image9.jpg"/><img width="200px"  src="images/image10.jpg"/> | Screws into the body of the ESC and attaches to the sides of the arduinos perf board. These pieces are designed specifically for this frame and should slide in place as shown | Yes             | .28mm        | 150mm/s    |
+| <img width="200px"  src="images/image12.jpeg"/>                                             | Acts to extend the head of a Nmm bolt ```A small hole must be drilled in the frame for the bolt to pass through```                                                             | No              | .28mm        | 150mm/s    |
 ### Wiring
 
 <img width="200px"  src="images/image13.jpg" alt="Wiring Diagram"/>
@@ -94,20 +94,26 @@ In order to simplify powering the nano I chose to pull power from the RC battery
 Connect the Arduino micro and the HC-06 as defined above if the references aren't clear in the photos, the pin definitions can be found at the top of the arduino [script](src/roboguide/arduino/src/src.ino)
 
 ## Software Setup
-### ROS
-* Follow the basic instructions to install Ubuntu 18.04. This requires an at least 16 GB SD card so have one on hand before starting. 
+### General
 
-* Once that process is complete, finish by installing ROS melodic with one of the methods below.
+* Follow the basic instructions to install Ubuntu 18.04. This requires an at least 16 GB SD card so have one on hand before starting. 
+### ROS
+
+* Installing ROS melodic with one of the methods below.
+
 #### Method 1: 
+
 * Follow the instructions to install ROS Melodic Desktop. http://wiki.ros.org/melodic/Installation/Ubuntu
+
 #### Method 2: 
+
 * Install from the JetsonHacksNano repo. https://github.com/JetsonHacksNano/installROS
 
-``` Only the base version is necessary but if you would like to use the GUI tools like rviz in my experience they will run fine.```
+```Only the base version is necessary but if you would like to use the GUI tools like rviz in my experience they will run fine.```
 
 Once ROS is installed. Install these ROS package dependencies
 
-``` sudo apt-get install \ 
+``` sudo apt-get install \
 ros-melodic-realsense2-camera \
 ros-melodic-joy \
 ros-melodic-joy-teleop-twist \
@@ -127,33 +133,51 @@ After the dependencies have been installed clone this repository into your ```wo
 
 A tutorial on how to make a ROS workspace can be found [here](http://wiki.ros.org/catkin/Tutorials/create_a_workspace)
 ### Arduino
-* After plugging in your Arduino, run ```ls /dev/tty*``` to find which port your arduino is attached on. 
-* cd into [arduino/](arduino/) and run ```ino build; ino upload -p ${port}```. This uploads the script to your arduino board. 
+
+* After plugging in your Arduino, run ```ls /dev/tty*``` to find which port your arduino is attached on.
+* cd into [arduino/](arduino/) and run ```ino build; ino upload -p ${port}```. This uploads the script to your arduino board.
 * Connect the ```SteeringControlPin```(Pin 9 by default) to the control line for the steering servo.
 * Connect the ```ThrottleControlPin```(Pin 12 by default) to the control line for the blue ESC.
 
 ### Bluetooth
-Just install the Joy Bluetooth Commander from the play store and pair to the HC-06 device within the app by moving the joystick. 
+
+Just install the Joy Bluetooth Commander from the play store and pair to the HC-06 device within the app by moving the joystick.
 
 ## Startup
+
 For either mode it's necessary to power the computer since there is no on or off switch manually plugging and unplugging the RC battery cable is the best way to go about turning the system on and off.
 
 ```Though this didn't raise issues during development you should shut down the nano separately via SSH first```
-### Manual 
-Turning on the setup without connecting **Bluetooth Mode Jumper** will startup the car in bluetooth mode. Then launch the App and start driving.
-### Autonomous 
+
+### Manual
+
+Turning on the setup without connecting **Bluetooth Mode Jumper** will startup the car in bluetooth mode. Then launch the app and start driving.
+
+### Autonomous
+
  In a new terminal run ```roslaunch rc.launch``` to run the ROS control. After it succesfully connects to the arduino run ```roslaunch mapping.launch``` on either the host machine to run exploration and mapping of the area. The car will stop running when it runs out of search areas
-## Sanity Checks
+
+### Sanity Checks
+
 #### librealsense
+
 * Once librealsense is installed properly you should be able to run the realsense-viewer command in terminal. This will bring up a window that allows you to view the data coming from either camera.
-#### ROS Nodes 
+* If you're getting a ```[No Realsense devices found]``` error when the device is plugged in check that the udev rules were installed properly. This can be as simple as unplugging and plugging the camera back in.
+
+#### ROS Nodes
+
 * In order to check that all of the notes are launching properly first look at the output of the Ross launch command for info.
 * If that doesn't work running the command ```rqt_graph``` will open up a window showing you which notes are sending data to which subscribers.
-<img src="" alt="Node Graph">
+
+<img src="" alt="Node Graph"/>
 
 #### Arduino ```WARN: Remove the wheels or prop up before testing```
-In order to check that the Arduino is connected and set up properly connect pin 11 to 5v. This will launch the car and serial control mode. By opening up a serial monitor and connecting to the port you found earlier you should be able to send commands directly to the car through this. Sending ```T25``` should set the throttle to 25% of the max throttle. Sending ```S90``` should set the steering wheels to 90 degrees aka straight forward.
 
-## Bugs
-#### No Realsense device found when the realsense is plugged in:
-* Check that the 
+In order to check that the Arduino is connected and set up properly connect pin 11 to 5v. This will launch the car and serial control mode. By opening up a serial monitor and connecting to the port you found earlier you should be able to send commands directly to the car through this.
+
+* Sending ```T25``` should set the throttle to 25% of the max throttle. 
+* Sending ```S90``` should set the steering wheels to 90 degrees aka straight forward.
+
+#### ESC
+
+In order to drive the ESC needs to be *armed* basically the input throttle should hold at 50% for a few seconds. This is indicated by the blinking green light turning a solid green.
