@@ -107,8 +107,7 @@ Connect the Arduino micro and the HC-06 as defined above if the references aren'
 
 Once ROS is installed. Install these ROS package dependencies
 
-```
-sudo apt-get install \ 
+``` sudo apt-get install \ 
 ros-melodic-realsense2-camera \
 ros-melodic-joy \
 ros-melodic-joy-teleop-twist \
@@ -126,9 +125,12 @@ ros-melodic-pointcloud-to-laserscan
 
 After the dependencies have been installed clone this repository into your ```workspace/src``` folder as a package and run ```catkin_make;source /devel/setup.bash```
 
-A tutorial on how to make a Ross workspace can be found [here](http://wiki.ros.org/catkin/Tutorials/create_a_workspace)
+A tutorial on how to make a ROS workspace can be found [here](http://wiki.ros.org/catkin/Tutorials/create_a_workspace)
 ### Arduino
- Run ```ls /dev/tty*``` to find which port your arduino is attached on. cd into [arduino/](arduino/) and run ```ino build; ino upload -p ${port}```. This uploads the script to your arduino board.
+* After plugging in your Arduino, run ```ls /dev/tty*``` to find which port your arduino is attached on. 
+* cd into [arduino/](arduino/) and run ```ino build; ino upload -p ${port}```. This uploads the script to your arduino board. 
+* Connect the ```SteeringControlPin```(Pin 9 by default) to the control line for the steering servo.
+* Connect the ```ThrottleControlPin```(Pin 12 by default) to the control line for the blue ESC.
 
 ### Bluetooth
 Just install the Joy Bluetooth Commander from the play store and pair to the HC-06 device within the app by moving the joystick. 
@@ -143,10 +145,14 @@ Turning on the setup without connecting **Bluetooth Mode Jumper** will startup t
  In a new terminal run ```roslaunch rc.launch``` to run the ROS control. After it succesfully connects to the arduino run ```roslaunch mapping.launch``` on either the host machine to run exploration and mapping of the area. The car will stop running when it runs out of search areas
 ## Sanity Checks
 #### librealsense
-
 * Once librealsense is installed properly you should be able to run the realsense-viewer command in terminal. This will bring up a window that allows you to view the data coming from either camera.
 #### ROS Nodes 
-<img src="" alt="">
+* In order to check that all of the notes are launching properly first look at the output of the Ross launch command for info.
+* If that doesn't work running the command ```rqt_graph``` will open up a window showing you which notes are sending data to which subscribers.
+<img src="" alt="Node Graph">
+
+#### Arduino ```WARN: Remove the wheels or prop up before testing```
+In order to check that the Arduino is connected and set up properly connect pin 11 to 5v. This will launch the car and serial control mode. By opening up a serial monitor and connecting to the port you found earlier you should be able to send commands directly to the car through this. Sending ```T25``` should set the throttle to 25% of the max throttle. Sending ```S90``` should set the steering wheels to 90 degrees aka straight forward.
 
 ## Bugs
 #### No Realsense device found when the realsense is plugged in:
