@@ -85,13 +85,13 @@ This section lists the parts needed to build the MSU RACECAR. After you have rec
 | <img width="200px"  src="images/image3.jpg"/><img width="200px"  src="images/image11.jpg"/> | Acts as a mount for the 2 3D Sensing Cameras. This piece is screwed directly into the front frame of the car as shown in pictures                                              | No              | .28mm        | 150mm/s    |
 | <img width="200px"  src="images/image8.jpg"/>                                               | Screws into the rear underside of the Jetson nano, while the front side rests on a piece of foam on top of the ESC                                                             | Yes             | .28mm        | 150mm/s    |
 | <img width="200px"  src="images/image9.jpg"/><img width="200px"  src="images/image10.jpg"/> | Screws into the body of the ESC and attaches to the sides of the arduinos perf board. These pieces are designed specifically for this frame and should slide in place as shown | Yes             | .28mm        | 150mm/s    |
-| <img width="200px"  src="images/image12.jpeg"/>                                             | Acts to extend the head of a Nmm bolt ```A small hole must be drilled in the frame for the bolt to pass through```                                                             | No              | .28mm        | 150mm/s    |
+| <img width="200px"  src="images/image12.jpeg"/>                                             | Acts to extend the head of a 5mm bolt ```A small hole must be drilled in the frame for the bolt to pass through```                                                             | No              | .28mm        | 150mm/s    |
 
 ### Wiring
 
 <img width="200px"  src="images/image13.jpg" alt="Wiring Diagram"/>
 
-In order to simplify powering the nano I chose to pull power from the RC battery to a LM2596 as shown above.
+In order to simplify powering the nano we pull power from the RC battery to a LM2596 as shown above. Before connecting the device to the nano, probe the output pins and turn the potentiometer until it's out putting 5V
 
 <img width="200px"  src="images/image12.jpg" alt="Wiring Diagram"/>
 
@@ -141,6 +141,7 @@ ros-melodic-pointcloud-to-laserscan
 After the dependencies have been installed clone this repository into your ```workspace/src``` folder as a package and run ```catkin_make;source /devel/setup.bash```
 
 A tutorial on how to make a ROS workspace can be found [here](http://wiki.ros.org/catkin/Tutorials/create_a_workspace)
+
 ### Arduino
 
 * After plugging in your Arduino, run ```ls /dev/tty*``` to find which port your arduino is attached on.
