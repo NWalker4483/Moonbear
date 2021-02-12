@@ -15,8 +15,6 @@
 /////////////////////////////
 #define CRAWL_SPEED 20     // %
 #define MAX_SPEED 36       // %
-#define STILL_ALLOWANCE 10 // Loop I
-#define REVERSE_ALLOWANCE 10
 /////////////////////////////
 // Physical Properties of the robot
 #define WHEEL_BASE 10        //inches // I forgot Y I did this in inches
@@ -34,16 +32,10 @@
 #include <SoftwareSerial.h>
 SoftwareSerial BT_Serial(11,10); // RX | TX
 
-volatile float velocity_estimate = 0;
-float current_throttle_setting = 0;
-float current_steering_angle = 0;
+int current_throttle_setting = 0;
+int current_steering_angle = 0;
 /////// Bluetooth stuff I aint write this LOL
 byte cmd[8] = {0, 0, 0, 0, 0, 0, 0, 0}; // bytes received
-
-double mapf(double val, double in_min, double in_max, double out_min, double out_max)
-{
-  return (val - in_min) * (out_max - out_min) / (in_max - in_min) + out_min;
-}
 
 int parseIntFast(int numberOfDigits)
 {
@@ -118,7 +110,7 @@ void CheckModeJumpers()
   }
   else if (digitalRead(SerialControlModePin) == HIGH)
   {
-    Serial.begin(9600); // HC-06 default serial speed is 9600
+    Serial.begin(9600); // Arduino default serial speed is 9600
     Serial.println("Beginning Simple Serial Mode.");
     Blink(3);
     mode = 'S';
@@ -139,9 +131,10 @@ void getMotorData(unsigned long time)
   // state_msg.drive.speed = 1;
 }
 void EncoderEvent()
-{ // Counts pulses on the  Encoder
+{ // Counts pulses on the Encoder
   if (digitalRead(EncoderPin) == LOW)
   {
+    pulses++;
     moved = true;
     last_pulse = millis();
   }
@@ -258,7 +251,7 @@ void loop()
   unsigned long time = millis(); // time - lastMilli == time passed
   //OUPUTS
   if (time - lastMilli >= LoopTime)
-  { // Enter Timed Loop
+  {
     getMotorData(time - lastMilli);
     switch (mode)
     {
@@ -268,7 +261,7 @@ void loop()
     }
     lastMilli = time;
   }
-  //INPUTS
+  // INPUTS
   switch (mode)
   {
   case 'B': // Handle Bluetooth
