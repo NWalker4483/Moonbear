@@ -73,8 +73,11 @@ This section lists the parts needed to build the MSU RACECAR. After you have rec
 | M5 x 6 Machine Screws                        | 1        |       |                                                                               |                                                                                    |
 | 20 x 40 Perfboard                            | 1        | $3    |                                                                               |                                                                                    |
 | LM2596 DC-DC Buck Converter Step Down Module | 1        | 14.95 | https://www.amazon.com/LM2596-Converter-Module-Supply-1-23V-30V/dp/B008BHBEE0 | The actual individual part is much cheaper but is often sold only in packs of 5-10 |
+
 ## Hardware Setup
-### 3D Printed Parts 
+
+### 3D Printed Parts
+
 ```All Parts where 3D printed on an Ender 3```
 |                                                                                             |                                                                                                                                                                                |                 |              |            |
 | ------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | --------------- | ------------ | ---------- |
@@ -83,29 +86,35 @@ This section lists the parts needed to build the MSU RACECAR. After you have rec
 | <img width="200px"  src="images/image8.jpg"/>                                               | Screws into the rear underside of the Jetson nano, while the front side rests on a piece of foam on top of the ESC                                                             | Yes             | .28mm        | 150mm/s    |
 | <img width="200px"  src="images/image9.jpg"/><img width="200px"  src="images/image10.jpg"/> | Screws into the body of the ESC and attaches to the sides of the arduinos perf board. These pieces are designed specifically for this frame and should slide in place as shown | Yes             | .28mm        | 150mm/s    |
 | <img width="200px"  src="images/image12.jpeg"/>                                             | Acts to extend the head of a Nmm bolt ```A small hole must be drilled in the frame for the bolt to pass through```                                                             | No              | .28mm        | 150mm/s    |
+
 ### Wiring
 
 <img width="200px"  src="images/image13.jpg" alt="Wiring Diagram"/>
 
-In order to simplify powering the nano I chose to pull power from the RC battery to a LM2596 as shown above. 
+In order to simplify powering the nano I chose to pull power from the RC battery to a LM2596 as shown above.
 
 <img width="200px"  src="images/image12.jpg" alt="Wiring Diagram"/>
 
 Connect the Arduino micro and the HC-06 as defined above if the references aren't clear in the photos, the pin definitions can be found at the top of the arduino [script](src/roboguide/arduino/src/src.ino)
 
 ## Software Setup
+
 ### General
 
-* Follow the basic instructions to install Ubuntu 18.04. This requires an at least 16 GB SD card so have one on hand before starting. 
+* Install Ubuntu on the Jetson Nano. https://developer.nvidia.com/embedded/learn/get-started-jetson-nano-devkit
+* Install general dependancies...
+
+```sudo apt-get install git ino nano```
+
 ### ROS
 
 * Installing ROS melodic with one of the methods below.
 
-#### Method 1: 
+#### Method 1
 
 * Follow the instructions to install ROS Melodic Desktop. http://wiki.ros.org/melodic/Installation/Ubuntu
 
-#### Method 2: 
+#### Method 2
 
 * Install from the JetsonHacksNano repo. https://github.com/JetsonHacksNano/installROS
 
