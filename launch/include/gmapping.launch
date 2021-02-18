@@ -1,0 +1,17 @@
+<launch>
+    <node pkg="gmapping" type="slam_gmapping" name="slam_gmapping" output="screen">
+        <rosparam>
+        odom_frame: odom
+        base_frame: base_link
+        map_frame: map
+  
+        map_update_interval: 1 # Publish new map
+  
+        maxUrange: 7 # Should be just less than sensor range
+        maxRange: 8.1 # Should be just greater than sensor range
+  
+        # Update frequencies
+        # linearUpdate: 0.25
+      </rosparam>
+     </node>
+</launch>

@@ -122,17 +122,17 @@ Connect the Arduino micro and the HC-06 as defined above if the references aren'
 
 Once ROS is installed. Install these ROS package dependencies
 
-``` sudo apt-get install \
-ros-melodic-realsense2-camera \
-ros-melodic-joy \
-ros-melodic-joy-teleop-twist \
-ros-melodic-openni-launch \
-ros-melodic-rosserial-arduino \ 
-ros-melodic-rosserial \
-ros-melodic-slam-gmapping \
-ros-melodic-amcl \  
-ros-melodic-move-base \
-ros-melodic-robot-upstart \  
+``` sudo apt-get install \\
+ros-melodic-realsense2-camera \\
+ros-melodic-joy \\
+ros-melodic-joy-teleop-twist \\
+ros-melodic-rosserial-arduino \\ 
+ros-melodic-rosserial \\
+ros-melodic-slam-gmapping \\
+ros-melodic-amcl \\ 
+ros-melodic-move-base \\
+ros-melodic-teb-local-planner \\
+ros-melodic-robot-upstart \\  
 ros-melodic-pointcloud-to-laserscan
 ```
 

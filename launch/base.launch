@@ -1,0 +1,21 @@
+<launch>
+  <include file="$(find roboguide)/launch/include/rs_t265.launch">
+    <arg name="initial_reset" value="true" />
+    <arg name="publish_odom_tf" value="false" />
+    <arg name="pose_frame_id" value="base_link" />
+    <arg name="odom_frame_id" value="odom" />
+  </include>
+  <!-- Launch PCA9685 Connection -->
+  <node pkg="roboguide" type="driver.py" name="base_controller" />
+  <!-- Launch Hyper IMU Connection -->
+  <node pkg="roboguide" type="phone.py" name="phone_controller">
+    <param name="host" value="$(optenv ROS_IP)"/>
+  </node>
+
+  <include file="$(find astra_camera)/launch/astra.launch" />
+
+  <node pkg="pointcloud_to_laserscan" type="pointcloud_to_laserscan_node" name="pointcloud_to_laserscan">
+    <remap from="cloud_in" to="/camera/depth/points" />
+    <rosparam file="$(find roboguide)/params/pointcloud_to_laserscan_params.yaml" command="load" />
+  </node>
+</launch>
