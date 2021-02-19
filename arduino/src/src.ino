@@ -6,7 +6,6 @@
 #define ThrottleControlPin 12 // Also acts as X when in mixed mode and throttle when in RC Mode
 #define SteeringControlPin 9 // Also acts as Y when in mixed mode and steering when in RC Mode
 /////////////////////////////
-#define CRAWL_SPEED 20     // %
 #define MAX_SPEED 36       // %
 /////////////////////////////
 #define LoopTime 100 // 10 Hz
@@ -16,7 +15,6 @@
 
 int current_throttle_setting = 0;
 int current_steering_angle = 0;
-/////// Bluetooth stuff I aint write this LOL
 
 int parseIntFast(int numberOfDigits)
 {

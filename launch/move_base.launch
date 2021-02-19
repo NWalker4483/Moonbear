@@ -2,7 +2,6 @@
    <node pkg="tf" type="static_transform_publisher" name="base_cam_link" args="0 0 0 0 0 0 /base_link /camera_link 3" />
    <node pkg="tf" type="static_transform_publisher" name="base_phone_link" args="0 0 0 0 0 0 /base_link /phone_link 3" />
  
-   <!--<include file="$(find roboguide)/launch/include/gmapping.launch" /> -->
    <include file="$(find roboguide)/launch/include/localization.launch" />
    
    <node pkg="move_base" type="move_base" respawn="false" name="move_base" output="screen">
@@ -12,7 +11,6 @@
       <rosparam file="$(find roboguide)/params/global_costmap_params.yaml" command="load" />
       <rosparam file="$(find roboguide)/params/base_local_planner_params.yaml" command="load" />
       
-
       <param name="base_global_planner" type="string" value="navfn/NavfnROS" />
       <param name="base_local_planner" value="teb_local_planner/TebLocalPlannerROS" />
 
