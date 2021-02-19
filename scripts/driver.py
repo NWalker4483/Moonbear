@@ -22,7 +22,7 @@ def cmd_callback(data):
   global set_pub
   global steering_angle
   steering_angle = int(90 + (data.angular.z * (180/3.14)))
-  pub.publish(data.linear.x)
+  set_pub.publish(data.linear.x)
 
 if __name__ == '__main__': 
   try:    
