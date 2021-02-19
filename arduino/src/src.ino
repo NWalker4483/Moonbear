@@ -58,6 +58,7 @@ void set_Throttle(int _speed)
   {
     moving_forward = true;
   }
+  current_throttle_setting  = _speed;
   _speed = map(_speed, -100, 100, 55, 145);
   Throttle.write(_speed);
 }
@@ -78,13 +79,11 @@ void ReadSerialCommands()
     case 'T': // Change Proportianal Gain
       setting = parseIntFast(4);
       set_Throttle(setting);
-      Serial.print("Set Throttle to ");
       Serial.println(current_throttle_setting);
       break;
     case 'S': // Change Integral Gain
       setting = parseIntFast(4);
       set_Steering(setting);
-      Serial.print("Set Steering to ");
       Serial.println(current_steering_angle);
       break;
     }
@@ -115,5 +114,3 @@ void loop()
   ReadSerialCommands();
 }
 //////////////////////
-
-
