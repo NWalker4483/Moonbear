@@ -6,13 +6,13 @@
     <arg name="odom_frame_id" value="odom" />
   </include>
   <!-- Launch PID Controls -->
-  <node name="left_wheel_pid" pkg="pid" type="controller" >
+  <node name="rear_wheel_pid" pkg="pid" type="controller" >
     <param name="Kp" value=".5" />
     <param name="Ki" value="0.25" />
     <param name="Kd" value="0.1" />
-    <param name="upper_limit" value="35" />
-    <param name="lower_limit" value="-20" />
-    <param name="windup_limit" value="35" />
+    <param name="upper_limit" value="10" />
+    <param name="lower_limit" value="-50" />
+    <param name="windup_limit" value="11" />
   </node>
   <!-- Launch Arduino Connection -->
   <node pkg="roboguide" type="driver.py" name="base_controller" />
@@ -22,9 +22,4 @@
   </node>
 
   <include file="$(find astra_camera)/launch/astra.launch" />
-
-  <node pkg="pointcloud_to_laserscan" type="pointcloud_to_laserscan_node" name="pointcloud_to_laserscan">
-    <remap from="cloud_in" to="/camera/depth/points" />
-    <rosparam file="$(find roboguide)/params/pointcloud_to_laserscan_params.yaml" command="load" />
-  </node>
 </launch>
