@@ -14,8 +14,8 @@ def odom_callback(data):
 
 def pid_callback(data):
   global ser
-  cmd_str = b'\nT{0}\nS{1}'.format(int(data.data), steering_angle)
-  ser.write(cmd_str) 
+  cmd_str = "T{0}\nS{1}\n".format(int(data.data), steering_angle)
+  ser.write(str.encode(cmd_str)) 
   rospy.loginfo(cmd_str)
 
 
@@ -28,7 +28,7 @@ def cmd_callback(data):
 if __name__ == '__main__': 
   try:
     steering_angle = 0
-    rospy.init_node('Linear_PID_Controller')
+    rospy.init_node('base_controller')
     twist_cmd_topic = rospy.get_param('~twist_cmd_topic', '/cmd_vel') 
     odom_topic = rospy.get_param('~odom_topic', "/camera/odom/sample") 
 

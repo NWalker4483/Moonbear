@@ -12,7 +12,7 @@
     <param name="Kd" value="0.1" />
     <param name="upper_limit" value="10" />
     <param name="lower_limit" value="-50" />
-    <param name="windup_limit" value="11" />
+    <param name="windup_limit" value="1000" />
   </node>
   <!-- Launch Arduino Connection -->
   <node pkg="roboguide" type="driver.py" name="base_controller" />
