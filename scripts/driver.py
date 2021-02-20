@@ -5,17 +5,18 @@ from geometry_msgs.msg import Twist
 from nav_msgs.msg import Odometry
 
 from std_msgs.msg import Float64
-#import serial
+import serial
 
 
 def odom_callback(data):
   global state_pub
-  rospy.loginfo(data)
   state_pub.publish(data.twist.twist.linear.x)
 
 def pid_callback(data):
   global ser
-  #ser.write(b'T{0}\nS{1}\n'.format(data, steering_angle))  
+  cmd_str = b'\nT{0}\nS{1}'.format(int(data.data), steering_angle)
+  ser.write(cmd_str) 
+  rospy.loginfo(cmd_str)
 
 
 def cmd_callback(data):
@@ -38,7 +39,7 @@ if __name__ == '__main__':
     rospy.Subscriber(odom_topic, Odometry, odom_callback, queue_size=1)
     rospy.Subscriber(twist_cmd_topic, Twist, cmd_callback, queue_size=1)
 
-    #ser = serial.Serial('/dev/ttyACM0')
+    ser = serial.Serial('/dev/ttyACM0')
     rospy.spin()
 
   except rospy.ROSInterruptException:
