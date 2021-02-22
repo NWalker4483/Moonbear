@@ -104,8 +104,8 @@ Connect the Arduino micro and the HC-06 as defined above if the references aren'
 * Install Ubuntu on the Jetson Nano. https://developer.nvidia.com/embedded/learn/get-started-jetson-nano-devkit
 * Install general dependancies...
 
-```sudo apt-get install git ino nano```
-
+```sudo apt-get install git arduino```
+* In order to properly use the real sense cameras you'll need to install the drivers for them seperately. luckily this process has ben mostly automated here.
 ### ROS
 
 * Installing ROS melodic with one of the methods below.
@@ -122,17 +122,17 @@ Connect the Arduino micro and the HC-06 as defined above if the references aren'
 
 Once ROS is installed. Install these ROS package dependencies
 
-``` sudo apt-get install \\
-ros-melodic-realsense2-camera \\
-ros-melodic-joy \\
-ros-melodic-joy-teleop-twist \\
-ros-melodic-rosserial-arduino \\ 
-ros-melodic-rosserial \\
-ros-melodic-slam-gmapping \\
-ros-melodic-amcl \\ 
-ros-melodic-move-base \\
-ros-melodic-teb-local-planner \\
-ros-melodic-robot-upstart \\  
+``` sudo apt-get install \
+ros-melodic-realsense2-camera \
+ros-melodic-joy \
+ros-melodic-joy-teleop-twist \
+ros-melodic-rosserial-arduino \
+ros-melodic-rosserial \
+ros-melodic-slam-gmapping \
+ros-melodic-amcl \
+ros-melodic-move-base \
+ros-melodic-teb-local-planner \
+ros-melodic-robot-upstart \
 ros-melodic-pointcloud-to-laserscan
 ```
 
