@@ -49,8 +49,6 @@ This section lists the parts needed to build the MSU RACECAR. After you have rec
 | Part                   | Quantity | Cost   | URL                                                                                                                                                                                                                                                                                                            | Note                           |
 | Jetson Nano            | 1        | $99.00 | https://www.nvidia.com/en-us/autonomous-machines/jetson-store/#jetson-Nano                                                                                                                                                                                                                                     | The 2GB version is also        |
 | Arduino Micro          | 1        | $32.00 | https://store.arduino.cc/usa/arduino-micro                                                                                                                                                                                                                                                                     | Generic Version will work also |
-| HC-06 Bluetooth Module | 1        | $11.00 | https://www.amazon.com/Wireless-Bluetooth-Receiver-Transceiver-Transmitter/dp/B01MQKX7VP/ref=asc_df_B01MQKX7VP/?tag=hyprod-20&linkCode=df0&hvadid=167146065113&hvpos=&hvnetw=g&hvrand=16656197411905567539&hvpone=&hvptwo=&hvqmt=&hvdev=c&hvdvcmdl=&hvlocint=&hvlocphy=1027158&hvtargid=pla-362748457327&psc=1 | Generic Version will work also |
-
 ### Camera(s) <a name="intro"></a>
 |            |          |         |                                                                                                                                                                                                                                                                                                                                                                                                           |      |
 | ---------- | -------- | ------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---- |
@@ -88,7 +86,7 @@ This section lists the parts needed to build the MSU RACECAR. After you have rec
 | <img width="200px"  src="images/image12.jpeg"/>                                             | Acts to extend the head of a 5mm bolt ```A small hole must be drilled in the frame for the bolt to pass through```                                                             | No              | .28mm        | 150mm/s    |
 
 
-### Wiring
+### Construction 
 #### Power
 
 <img width="200px"  src="images/image14.jpg" alt="Wiring Diagram"/>
@@ -105,18 +103,25 @@ In order to power the Jetson Nano we pull power from the RC battery into a Buck 
 
    In order to actually connect the convertor to power you'll need to tap into wire somewhere. And our particular case we have an adapter that connects the dean connecter of the battery to the ______ connector for the ESC. By thinly soldering two cables to the output of that adapter it remains usable but also allows us to connect to the header pins we connected earlier.
 
-```A small dab of hot glue at the end of the head can stop the wires from moving around```
+```A small dab of hot glue at the end of the head can stop the wires from moving around There's no need to add as much as I did```
 
-<img width="200px"  src="images/image13.jpg" alt="Wiring Diagram"/>
-
+<img width="200px"  src="images/adapter1.jpg" alt="Wiring Diagram"/>
+<img width="200px"  src="images/adapter2.jpg" alt="Wiring Diagram"/>
    Once the leads are soldered and connected to the Voltage convertor. Disconnect the micro usb cable from the Nano and connect the deans connector to the battery. Using a multimeter probe the output pins of the device while turning the blue potentiometer until the output voltage is 5.3 V. Once that's done connect to the Nano and confirm that it boots.
-   
-   ```If At this point you plug it in and it doesn't turn on check that the black jumper above the other power connector has been removed. The Nano does have built in overvoltage protection so if the input voltage is slightly too high it simply won't turn on also```
 
-<img width="200px"  src="images/image12.jpg" alt="Wiring Diagram"/>
+   ```If at this point you plug it in and it doesn't turn on check that the black jumper above the other power connector has been removed. Also the Nano does have built in overvoltage protection so if the input voltage is slightly too high it simply won't turn on```
+### Arduino
+For the step you're going to need a piece of 20 x 40 Proto board. Solder two female header pin strips On the board lengthwise such that the arduino can slide into them.
 
-Connect the Arduino micro and the HC-06 as defined above if the references aren't clear in the photos, the pin definitions can be found at the top of the arduino [script](src/roboguide/arduino/src/src.ino)
+```Add Header Photo```
 
+<img width="200px"  src="images/arduino1.jpg" alt="Wiring Diagram"/>
+
+```In earlier version of this had two boards used here which is why you see the extra female that are connected above the blue wire. Ignore it here```
+
+Both the ESC and steering are treated as servos so we'll need to wire male connectors to the Arduino in order to control them.
+
+Connect two of the wires to power. and two of the wires to ground.
 ## Software Setup
 
 ### General
