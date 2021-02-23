@@ -47,7 +47,7 @@ This section lists the parts needed to build the MSU RACECAR. After you have rec
 |                        |          |        |                                                                                                                                                                                                                                                                                                                |                                |
 | ---------------------- | -------- | ------ | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------ |
 | Part                   | Quantity | Cost   | URL                                                                                                                                                                                                                                                                                                            | Note                           |
-| Jetson Nano            | 1        | $99.00 | https://www.nvidia.com/en-us/autonomous-machines/jetson-store/#jetson-nano                                                                                                                                                                                                                                     | The 2GB version is also        |
+| Jetson Nano            | 1        | $99.00 | https://www.nvidia.com/en-us/autonomous-machines/jetson-store/#jetson-Nano                                                                                                                                                                                                                                     | The 2GB version is also        |
 | Arduino Micro          | 1        | $32.00 | https://store.arduino.cc/usa/arduino-micro                                                                                                                                                                                                                                                                     | Generic Version will work also |
 | HC-06 Bluetooth Module | 1        | $11.00 | https://www.amazon.com/Wireless-Bluetooth-Receiver-Transceiver-Transmitter/dp/B01MQKX7VP/ref=asc_df_B01MQKX7VP/?tag=hyprod-20&linkCode=df0&hvadid=167146065113&hvpos=&hvnetw=g&hvrand=16656197411905567539&hvpone=&hvptwo=&hvqmt=&hvdev=c&hvdvcmdl=&hvlocint=&hvlocphy=1027158&hvtargid=pla-362748457327&psc=1 | Generic Version will work also |
 
@@ -83,15 +83,35 @@ This section lists the parts needed to build the MSU RACECAR. After you have rec
 | ------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | --------------- | ------------ | ---------- |
 | Image(s)                                                                                    | Purpose                                                                                                                                                                        | Supports Needed | Layer Height | Printspeed |
 | <img width="200px"  src="images/image3.jpg"/><img width="200px"  src="images/image11.jpg"/> | Acts as a mount for the 2 3D Sensing Cameras. This piece is screwed directly into the front frame of the car as shown in pictures                                              | No              | .28mm        | 150mm/s    |
-| <img width="200px"  src="images/image8.jpg"/>                                               | Screws into the rear underside of the Jetson nano, while the front side rests on a piece of foam on top of the ESC                                                             | Yes             | .28mm        | 150mm/s    |
+| <img width="200px"  src="images/image8.jpg"/>                                               | Screws into the rear underside of the Jetson Nano, while the front side rests on a piece of foam on top of the ESC                                                             | Yes             | .28mm        | 150mm/s    |
 | <img width="200px"  src="images/image9.jpg"/><img width="200px"  src="images/image10.jpg"/> | Screws into the body of the ESC and attaches to the sides of the arduinos perf board. These pieces are designed specifically for this frame and should slide in place as shown | Yes             | .28mm        | 150mm/s    |
 | <img width="200px"  src="images/image12.jpeg"/>                                             | Acts to extend the head of a 5mm bolt ```A small hole must be drilled in the frame for the bolt to pass through```                                                             | No              | .28mm        | 150mm/s    |
 
+
 ### Wiring
+#### Power
+
+<img width="200px"  src="images/image14.jpg" alt="Wiring Diagram"/>
+
+In order to power the Jetson Nano we pull power from the RC battery into a Buck Convertor (LM2596) as shown above.
+
+   This drops the batteries 7V to a useable 5V. First solder the positive and negative leads of a cut micro USB cable to the output of the LM2596.
+
+   ``` For reference these are the two outer most pins you can check which is positive by connecting both to a multimeter and seeing when the voltage reading is positive ``` 
+   
+   Then solder a male header pin in each of the input holes of the device. 
+
+   ```If spare header pins are not available, These can be soldered directly to the board but I find it very convenient to be able to move dangling parts as the design changes.```
+
+   In order to actually connect the convertor to power you'll need to tap into wire somewhere. And our particular case we have an adapter that connects the dean connecter of the battery to the ______ connector for the ESC. By thinly soldering two cables to the output of that adapter it remains usable but also allows us to connect to the header pins we connected earlier.
+
+```A small dab of hot glue at the end of the head can stop the wires from moving around```
 
 <img width="200px"  src="images/image13.jpg" alt="Wiring Diagram"/>
 
-In order to simplify powering the nano we pull power from the RC battery to a LM2596 as shown above. Before connecting the device to the nano, probe the output pins and turn the potentiometer until it's out putting 5V
+   Once the leads are soldered and connected to the Voltage convertor. Disconnect the micro usb cable from the Nano and connect the deans connector to the battery. Using a multimeter probe the output pins of the device while turning the blue potentiometer until the output voltage is 5.3 V. Once that's done connect to the Nano and confirm that it boots.
+   
+   ```If At this point you plug it in and it doesn't turn on check that the black jumper above the other power connector has been removed. The Nano does have built in overvoltage protection so if the input voltage is slightly too high it simply won't turn on also```
 
 <img width="200px"  src="images/image12.jpg" alt="Wiring Diagram"/>
 
@@ -101,7 +121,7 @@ Connect the Arduino micro and the HC-06 as defined above if the references aren'
 
 ### General
 
-* Install Ubuntu on the Jetson Nano. https://developer.nvidia.com/embedded/learn/get-started-jetson-nano-devkit
+* Install Ubuntu on the Jetson Nano. https://developer.nvidia.com/embedded/learn/get-started-jetson-Nano-devkit
 * Install general dependancies...
 
 ```sudo apt-get install git arduino```
@@ -157,7 +177,7 @@ Just install the Joy Bluetooth Commander from the play store and pair to the HC-
 
 For either mode it's necessary to power the computer since there is no on or off switch manually plugging and unplugging the RC battery cable is the best way to go about turning the system on and off.
 
-```Though this didn't raise issues during development you should shut down the nano separately via SSH first```
+```Though this didn't raise issues during development you should shut down the Nano separately via SSH first```
 
 ### Manual
 
