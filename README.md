@@ -95,7 +95,7 @@ In order to power the Jetson Nano we pull power from the RC battery into a Buck 
 This drops the batteries 7V to a useable 5V. In order to use this with the Jetson Nano, first solder the positive and negative leads of a cut micro USB cable to the output of the LM2596.
 
    ``` For reference these are the two outer most pins you can check which is positive by connecting both to a multimeter and seeing when the voltage reading is positive ``` 
-   
+
    Then solder a male header pin in each of the input holes of the device. 
 
    ```If spare header pins are not available, These can be soldered directly to the board but I find it very convenient to be able to move dangling parts as the design changes.```
@@ -110,8 +110,10 @@ This drops the batteries 7V to a useable 5V. In order to use this with the Jetso
    Once the leads are soldered and connected to the Voltage convertor. Disconnect the micro usb cable from the Nano and connect the deans connector to the battery. Using a multimeter probe the output pins of the device while turning the blue potentiometer until the output voltage is 5.3 V. Once that's done connect to the Nano and confirm that it boots.
 
    ```If at this point you plug it in and it doesn't turn on check that the black jumper above the other power connector has been removed. Also the Nano does have built in overvoltage protection so if the input voltage is slightly too high it simply won't turn on```
+
 ### Arduino
-For the step you're going to need a piece of 20 x 40 Proto board. Solder two female header pin strips On the board lengthwise such that the arduino can slide into them.
+
+For the step you're going to need a piece of 20 x 40 Proto board. Solder two female header pin strips on the board lengthwise such that the arduino can slide into them.
 
 ```Add Header Photo```
 
@@ -121,9 +123,12 @@ For the step you're going to need a piece of 20 x 40 Proto board. Solder two fem
 
 Both the ESC and steering are treated as servos so we'll need to wire male connectors to the Arduino in order to control them.
 
-Connect two of the wires to power. and two of the wires to ground. Connect one wire to pin 9 of the adruino for steering. Connect the second wire to pin 12 of the adruino for the esc.
+Connect two of the wires to power. and two of the wires to ground. Connect one wire to pin 9 of the adruino for steering. Connect the second wire to pin 12 of the adruino for the esc. 
 
 ```I highly recommend keeping these in groups of 3 with tape or something, just to remember which ones are which because it's impossible to see when the board is slid into place```
+
+<img width="200px"  src="images/slide1.jpg" alt="Wiring Diagram"/>
+Take the 2 L shaped pieces you 3D printed earlier And place them into the groves next to the battery as shown above. The pieces will only slide in smoothly when in their correct position
 ## Software Setup
 
 ### General
