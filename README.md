@@ -92,8 +92,7 @@ This section lists the parts needed to build the MSU RACECAR. After you have rec
 <img width="200px"  src="images/image14.jpg" alt="Wiring Diagram"/>
 
 In order to power the Jetson Nano we pull power from the RC battery into a Buck Convertor (LM2596) as shown above.
-
-   This drops the batteries 7V to a useable 5V. First solder the positive and negative leads of a cut micro USB cable to the output of the LM2596.
+This drops the batteries 7V to a useable 5V. In order to use this with the Jetson Nano, first solder the positive and negative leads of a cut micro USB cable to the output of the LM2596.
 
    ``` For reference these are the two outer most pins you can check which is positive by connecting both to a multimeter and seeing when the voltage reading is positive ``` 
    
@@ -103,10 +102,11 @@ In order to power the Jetson Nano we pull power from the RC battery into a Buck 
 
    In order to actually connect the convertor to power you'll need to tap into wire somewhere. And our particular case we have an adapter that connects the dean connecter of the battery to the ______ connector for the ESC. By thinly soldering two cables to the output of that adapter it remains usable but also allows us to connect to the header pins we connected earlier.
 
-```A small dab of hot glue at the end of the head can stop the wires from moving around There's no need to add as much as I did```
+```A small dab of hot glue at the end of the head can stop the wires from moving around. There's no need to add as much as I did, it makes it harder to plug in```
 
 <img width="200px"  src="images/adapter1.jpg" alt="Wiring Diagram"/>
 <img width="200px"  src="images/adapter2.jpg" alt="Wiring Diagram"/>
+
    Once the leads are soldered and connected to the Voltage convertor. Disconnect the micro usb cable from the Nano and connect the deans connector to the battery. Using a multimeter probe the output pins of the device while turning the blue potentiometer until the output voltage is 5.3 V. Once that's done connect to the Nano and confirm that it boots.
 
    ```If at this point you plug it in and it doesn't turn on check that the black jumper above the other power connector has been removed. Also the Nano does have built in overvoltage protection so if the input voltage is slightly too high it simply won't turn on```
@@ -121,7 +121,9 @@ For the step you're going to need a piece of 20 x 40 Proto board. Solder two fem
 
 Both the ESC and steering are treated as servos so we'll need to wire male connectors to the Arduino in order to control them.
 
-Connect two of the wires to power. and two of the wires to ground.
+Connect two of the wires to power. and two of the wires to ground. Connect one wire to pin 9 of the adruino for steering. Connect the second wire to pin 12 of the adruino for the esc.
+
+```I highly recommend keeping these in groups of 3 with tape or something, just to remember which ones are which because it's impossible to see when the board is slid into place```
 ## Software Setup
 
 ### General
