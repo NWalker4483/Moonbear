@@ -83,7 +83,7 @@ This section lists the parts needed to build the MSU RACECAR. After you have rec
 | <img width="200px"  src="images/image3.jpg"/><img width="200px"  src="images/image11.jpg"/> | Acts as a mount for the 2 3D Sensing Cameras. This piece is screwed directly into the front frame of the car as shown in pictures                                              | No              | .28mm        | 150mm/s    |
 | <img width="200px"  src="images/image8.jpg"/>                                               | Screws into the rear underside of the Jetson Nano, while the front side rests on a piece of foam on top of the ESC                                                             | Yes             | .28mm        | 150mm/s    |
 | <img width="200px"  src="images/image9.jpg"/><img width="200px"  src="images/image10.jpg"/> | Screws into the body of the ESC and attaches to the sides of the arduinos perf board. These pieces are designed specifically for this frame and should slide in place as shown | Yes             | .28mm        | 150mm/s    |
-| <img width="200px"  src="images/image12.jpeg"/>                                             | Acts to extend the head of a 5mm bolt ```A small hole must be drilled in the frame for the bolt to pass through```                                                             | No              | .28mm        | 150mm/s    |
+| <img width="200px"  src="images/image12.jpeg"/>                                             | *kTake better photo* Acts to extend the head of a 5mm bolt ```A small hole must be drilled in the frame for the bolt to pass through```                                                             | No              | .28mm        | 150mm/s    |
 
 
 ### Construction 
@@ -137,7 +137,9 @@ Take the 2 L shaped pieces you 3D printed earlier And place them into the groves
 * Install general dependancies...
 
 ```sudo apt-get install git arduino```
+
 * In order to properly use the real sense cameras you'll need to install the drivers for them seperately. luckily this process has ben mostly automated here.
+
 ### ROS
 
 * Installing ROS melodic with one of the methods below.
