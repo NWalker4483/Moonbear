@@ -10,7 +10,7 @@ TebLocalPlannerROS:
   
   footprint_model:
     type: circular
-    radius: .15
+    radius: .25
 
   xy_goal_tolerance: 0.22
   yaw_goal_tolerance: 0.3
