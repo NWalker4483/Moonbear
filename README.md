@@ -15,7 +15,7 @@
 1. [Introduction](#intro)
 2. [The Build Construction](#paragraph1)
    1. Bill of Materials
-   2. Computing Modules (?)
+   2. Compute Modules
    3. Camera(s)
    4. Wi-Fi
    5. Assembly Hardware
@@ -136,7 +136,7 @@ Take the 2 L shaped pieces you 3D printed earlier And place them into the groves
 * Install Ubuntu on the Jetson Nano. https://developer.nvidia.com/embedded/learn/get-started-jetson-Nano-devkit
 * Install general dependancies...
 
-```sudo apt-get install git arduino```
+```sudo apt-get install git```
 
 * In order to properly use the real sense cameras you'll need to install the drivers for them seperately. luckily this process has ben mostly automated here.
 
@@ -172,11 +172,17 @@ ros-melodic-pointcloud-to-laserscan
 
 ```Librealsense is necessary for using the **realsense2-camera** package. Some of the documentation says that it is installed by default but that hasn't worked in my case so I recommend you follow this [tutorial](https://github.com/IntelRealSense/librealsense) to install it separately.```
 
-After the dependencies have been installed clone this repository into your ```workspace/src``` folder as a package and run ```catkin_make;source /devel/setup.bash```
+After the dependencies have been installed clone this repository into your ```workspace/src``` folder as a package and run ```catkin_make; source /devel/setup.bash```
 
 A tutorial on how to make a ROS workspace can be found [here](http://wiki.ros.org/catkin/Tutorials/create_a_workspace)
 
 ### Arduino
+
+* In order to get a recent version of the Arduino IDE you're going to need to install it from their official website
+* Go to their page select download and download the file associated with your operating system to install.
+* Once installed and running, search for your plugged in Arduino device and upload the src.ino from the Arduino folder of this git repo repository.
+
+### OR
 
 * After plugging in your Arduino, run ```ls /dev/tty*``` to find which port your arduino is attached on.
 * cd into [arduino/](arduino/) and run ```ino build; ino upload -p ${port}```. This uploads the script to your arduino board.

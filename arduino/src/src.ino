@@ -1,20 +1,55 @@
 /* 
   _      _      _
 >(.)__ <(.)__ =(.)__
- (___/  (___/  (___/ */
-/////////////////////////////
-#define ThrottleControlPin 12 // Also acts as X when in mixed mode and throttle when in RC Mode
-#define SteeringControlPin 9 // Also acts as Y when in mixed mode and steering when in RC Mode
-/////////////////////////////
-#define MAX_SPEED 36       // %
-/////////////////////////////
-#define LoopTime 100 // 10 Hz
-///////////////
+ (___/  (___/  (___/ 
+*/
+
+#define THROTTLE_ENABLE_PIN 2
+#define STEERING_ENABLE_PIN 4
+
+#define THROTTLE_CONTROL_PIN A4
+#define STEERING_CONTROL_PIN A5
+
+#define STEERING_FEEDBACK_PIN A3
+
+#define THROTTLE_DIR_PIN 10
+#define STEERING_DIR_PIN 12
+
+#define STEERING_SPEED 25
+
+#define MAX_STEERING_ANGLE 45
+
+#define MAX_STEERING_READING 843
+#define MIN_STEERING_READING 0
+
+#define TIMEOUT_SECONDS 600000
 
 #include <Servo.h>
+void test();
+// Globals
+int target_steering_angle = 0;
+unsigned long lastCmdMilli = 0; // time at the end of the last command
 
-int current_throttle_setting = 0;
-int current_steering_angle = 0;
+int smoothAnalogRead(int pin)
+{
+  int i;
+  int value = 0;
+  int numReadings = 10;
+
+  for (i = 0; i < numReadings; i++)
+  {
+    // Read light sensor data.
+    value = value + analogRead(pin);
+
+    // 1ms pause adds more stability between reads.
+    delay(1);
+  }
+
+  // Take an average of all the readings.
+  value = value / numReadings;
+
+  return value;
+}
 
 int parseIntFast(int numberOfDigits)
 {
@@ -32,42 +67,23 @@ int parseIntFast(int numberOfDigits)
   return theNumber;
 }
 
-//Globals
-unsigned long lastMilli = 0; // time at the end of the last loop
-boolean moving_forward = false;
-
-Servo Throttle;
-Servo Steering;
-
-void Brake()
-{                         // Disengages the brake on the ESC
-  moving_forward = false; // Set first to prevent recurion
-  Throttle.write(60);
-  delay(100);
-  Throttle.write(90);
-  delay(100);
-}
-
 void set_Throttle(int _speed)
 {
-  if ((_speed < 0) && moving_forward)
-  {
-    Brake();
-  }
-  if (_speed > 0)
-  {
-    moving_forward = true;
-  }
-  current_throttle_setting  = _speed;
-  _speed = map(_speed, -100, 100, 55, 145);
-  Throttle.write(_speed);
+  digitalWrite(THROTTLE_DIR_PIN, (_speed > 0) ? HIGH : LOW);
+  int cmd = map(abs(_speed), 0, 100, 1023, 0);
+  analogWrite(THROTTLE_CONTROL_PIN, cmd);
 }
 
-void set_Steering(int _angle){
-  Steering.write(_angle);
-  current_steering_angle = _angle; 
+void set_Steering(int _angle)
+{
+  target_steering_angle = constrain(_angle, 90 - MAX_STEERING_ANGLE, 90 + MAX_STEERING_ANGLE);
 }
-  
+
+int reading2degree(int _reading)
+{
+  return map(_reading, MIN_STEERING_READING, MAX_STEERING_READING, -MAX_STEERING_ANGLE, MAX_STEERING_ANGLE);
+}
+
 void ReadSerialCommands()
 { // Plot PID Values using Serial Plotter
   if (Serial.available())
@@ -76,41 +92,75 @@ void ReadSerialCommands()
     int setting;
     switch (cmdByte)
     {
-    case 'T': // Change Proportianal Gain
+    case 'T':
       setting = parseIntFast(4);
       set_Throttle(setting);
-      Serial.println(current_throttle_setting);
+      Serial.println(setting);
+      lastCmdMilli = millis();
       break;
-    case 'S': // Change Integral Gain
+    case 'S':
       setting = parseIntFast(4);
       set_Steering(setting);
-      Serial.println(current_steering_angle);
+      Serial.println(setting);
+      break;
+    case 'X':
+      test();
       break;
     }
     Serial.flush();
   }
 }
 
+void UpdatePowerSteering()
+{
+  int reading = smoothAnalogRead(STEERING_FEEDBACK_PIN);
+  int angle = reading2degree(reading);
+  Serial.println(angle);
+
+  if (abs(target_steering_angle - angle) > 5) // Deadzone
+  {
+    digitalWrite(STEERING_DIR_PIN, (target_steering_angle > angle) ? HIGH : LOW);
+    int cmd = map(abs(STEERING_SPEED), 0, 100, 1023, 0);
+    analogWrite(STEERING_CONTROL_PIN, cmd);
+  }
+  else
+  {
+    digitalWrite(STEERING_ENABLE_PIN, LOW);
+  }
+}
+
 void setup()
 {
-  pinMode(SteeringControlPin, OUTPUT);
-  pinMode(ThrottleControlPin, OUTPUT);
+  Serial.begin(9600);
+  pinMode(THROTTLE_CONTROL_PIN, OUTPUT);
+  pinMode(STEERING_CONTROL_PIN, OUTPUT);
 
-  Throttle.attach(ThrottleControlPin);
-  Steering.attach(SteeringControlPin);
+  pinMode(THROTTLE_DIR_PIN, OUTPUT);
+  pinMode(STEERING_DIR_PIN, OUTPUT);
+  pinMode(STEERING_FEEDBACK_PIN, INPUT);
 
-  // Throttle.write(90);
-  // delay(2000);
-  // Throttle.write(0);
-  // delay(2000);
-  // Throttle.write(180);
-  // delay(2000);
-  Throttle.write(90);
-  delay(2000);
+  pinMode(THROTTLE_ENABLE_PIN, OUTPUT);
+  pinMode(STEERING_ENABLE_PIN, OUTPUT);
+
+  set_Steering(0);
+  set_Throttle(0);
 }
 
 void loop()
 {
   ReadSerialCommands();
+  UpdatePowerSteering();
+  if ((millis() - lastCmdMilli) > (TIMEOUT_SECONDS * 1000))
+  { // Cut-off for safety if no commands read
+    set_Throttle(0);
+    digitalWrite(THROTTLE_ENABLE_PIN, LOW);
+  }
+  else
+  {
+    digitalWrite(THROTTLE_ENABLE_PIN, HIGH);
+  }
 }
-//////////////////////
+
+void test()
+{
+}
