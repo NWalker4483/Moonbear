@@ -1,24 +1,34 @@
 /* 
   _      _      _
 >(.)__ <(.)__ =(.)__
- (___/  (___/  (___/ */
+ (___/  (___/  (___/ 
+*/
 
-#define SAFETY_PIN 3
-#define THROTTLE_PIN 6
-#define STEERING_PIN 11
+#define THROTTLE_SAFETY_PIN 2
+#define STEERING_SAFETY_PIN 4
 
-#define THROTTLE_DIR_PIN 6
-#define STEERING_DIR_PIN 11
+#define THROTTLE_CONTROL_PIN A4
+#define STEERING_CONTROL_PIN A5
 
-#define STEERING_FEEDBACK_PIN 2
+#define STEERING_FEEDBACK_PIN A3
+
+#define THROTTLE_DIR_PIN 10
+#define STEERING_DIR_PIN 12
+
 #define STEERING_SPEED 25
 
 #define MAX_STEERING_ANGLE 45
 
-#define MAX_STEERING_READING 1023
+#define MAX_STEERING_READING 843
 #define MIN_STEERING_READING 0
 
-#define TIMEOUT_SECONDS 2
+#define TIMEOUT_SECONDS 600000000
+
+#include <Servo.h>
+void test();
+// Globals
+int target_steering_angle = 0;
+unsigned long lastCmdMilli = 0; // time at the end of the last command
 
 int smoothAnalogRead(int pin)
 {
@@ -38,9 +48,6 @@ int smoothAnalogRead(int pin)
   // Take an average of all the readings.
   value = value / numReadings;
 
-  // Scale to 8 bits (0 - 255).
-  value = value / 4;
-
   return value;
 }
 
@@ -59,25 +66,22 @@ int parseIntFast(int numberOfDigits)
   theNumber = atoi(theNumberString);
   return theNumber;
 }
-// Globals
-int target_steering_angle = 0;
-unsigned long lastCmdMilli = 0; // time at the end of the last command
 
 void set_Throttle(int _speed)
 {
   digitalWrite(THROTTLE_DIR_PIN, (_speed > 0) ? HIGH : LOW);
   int cmd = map(abs(_speed), 0, 100, 1023, 0);
-  analogWrite(THROTTLE_PIN, cmd);
+  analogWrite(THROTTLE_CONTROL_PIN, cmd);
 }
 
 void set_Steering(int _angle)
 {
-  target_steering_angle = constrain(_angle, -MAX_STEERING_ANGLE, MAX_STEERING_ANGLE);
+  target_steering_angle = constrain(_angle, 90 - MAX_STEERING_ANGLE, 90 + MAX_STEERING_ANGLE);
 }
 
-int reading2degree(int reading)
+int reading2degree(int _reading)
 {
-  return map(MIN_STEERING_READING, MAX_STEERING_READING, -MAX_STEERING_ANGLE, MAX_STEERING_ANGLE);
+  return map(_reading, MIN_STEERING_READING, MAX_STEERING_READING, -MAX_STEERING_ANGLE, MAX_STEERING_ANGLE);
 }
 
 void ReadSerialCommands()
@@ -99,52 +103,67 @@ void ReadSerialCommands()
       set_Steering(setting);
       Serial.println(setting);
       break;
+    case 'X':
+      test();
+      break;
     }
     Serial.flush();
   }
 }
 
-void CheckPowerSteering()
+void UpdatePowerSteering()
 {
   int reading = smoothAnalogRead(STEERING_FEEDBACK_PIN);
   int angle = reading2degree(reading);
+  Serial.println(angle);
 
-  digitalWrite(STEERING_DIR_PIN, (target_steering_angle > angle) ? HIGH : LOW);
-
-  if (abs(target_steering_angle - angle) > 2)
+  if (abs(target_steering_angle - angle) > 5) // Deadzone
   {
+    digitalWrite(STEERING_DIR_PIN, (target_steering_angle > angle) ? HIGH : LOW);
     int cmd = map(abs(STEERING_SPEED), 0, 100, 1023, 0);
-    analogWrite(STEERING_PIN, cmd);
+    analogWrite(STEERING_CONTROL_PIN, cmd);
   }
   else
   {
-    digitalWrite(STEERING_PIN, HIGH);
+    digitalWrite(STEERING_SAFETY_PIN, LOW);
   }
 }
 
 void setup()
 {
-  pinMode(THROTTLE_PIN, OUTPUT);
-  pinMode(STEERING_PIN, OUTPUT);
+  Serial.begin(9600);
+  pinMode(THROTTLE_CONTROL_PIN, OUTPUT);
+  pinMode(STEERING_CONTROL_PIN, OUTPUT);
 
-  digitalWrite(THROTTLE_PIN, HIGH);
-  digitalWrite(STEERING_PIN, HIGH);
+  digitalWrite(THROTTLE_CONTROL_PIN, HIGH);
+  digitalWrite(STEERING_CONTROL_PIN, HIGH);
 
-  pinMode(SAFETY_PIN, OUTPUT);
-  digitalWrite(SAFETY_PIN, HIGH); // Disable Safety
+  pinMode(THROTTLE_DIR_PIN, OUTPUT);
+  pinMode(STEERING_DIR_PIN, OUTPUT);
+  pinMode(STEERING_FEEDBACK_PIN, INPUT);
+
+  pinMode(THROTTLE_SAFETY_PIN, OUTPUT);
+  pinMode(STEERING_SAFETY_PIN, OUTPUT);
+
+  digitalWrite(THROTTLE_SAFETY_PIN, HIGH); // Disable Safety
 }
 
 void loop()
 {
-  ReadSerialCommands();
-  CheckPowerSteering();
-  if ((millis() - lastCmdMilli) > (TIMEOUT_SECONDS * 1000))
-  { // Cut-off for safety if no commands read
-    digitalWrite(THROTTLE_PIN, HIGH);
-    digitalWrite(SAFETY_PIN, LOW);
-  }
-  else
-  {
-    digitalWrite(SAFETY_PIN, HIGH);
-  }
+
+//  ReadSerialCommands();
+UpdatePowerSteering();
+//  if ((millis() - lastCmdMilli) > (TIMEOUT_SECONDS * 1000))
+//  { // Cut-off for safety if no commands read
+//    set_Throttle(0);
+//    digitalWrite(THROTTLE_SAFETY_PIN, LOW);
+//  }
+//  else
+//  {
+//    digitalWrite(THROTTLE_SAFETY_PIN, HIGH);
+//  }
+}
+
+void test(){
+
 }

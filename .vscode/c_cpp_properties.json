@@ -3,14 +3,24 @@
         {
             "name": "Mac",
             "includePath": [
+                "/Applications/Arduino.app/Contents/Java/tools/**",
+                "/Users/nilewalker/Documents/Arduino/libraries/**",
+                "/Applications/Arduino.app/Contents/Java/libraries/**",
+                "/Applications/Arduino.app/Contents/Java/hardware/tools/**",
+                "/Applications/Arduino.app/Contents/Java/hardware/arduino/avr/**",
                 "${workspaceFolder}/**"
             ],
-            "defines": [],
+            "defines": [
+                "USBCON"
+            ],
             "macFrameworkPath": [],
             "compilerPath": "/usr/local/bin/gcc-10",
             "cStandard": "gnu17",
             "cppStandard": "gnu++14",
-            "intelliSenseMode": "macos-gcc-x64"
+            "intelliSenseMode": "macos-gcc-x64",
+            "forcedInclude": [
+                "/Applications/Arduino.app/Contents/Java/hardware/arduino/avr/cores/arduino/Arduino.h"
+            ]
         }
     ],
     "version": 4
