@@ -83,7 +83,7 @@ This section lists the parts needed to build the MSU RACECAR. After you have rec
 | <img width="200px"  src="images/image3.jpg"/><img width="200px"  src="images/image11.jpg"/> | Acts as a mount for the 2 3D Sensing Cameras. This piece is screwed directly into the front frame of the car as shown in pictures                                              | No              | .28mm        | 150mm/s    |
 | <img width="200px"  src="images/image8.jpg"/>                                               | Screws into the rear underside of the Jetson Nano, while the front side rests on a piece of foam on top of the ESC                                                             | Yes             | .28mm        | 150mm/s    |
 | <img width="200px"  src="images/image9.jpg"/><img width="200px"  src="images/image10.jpg"/> | Screws into the body of the ESC and attaches to the sides of the arduinos perf board. These pieces are designed specifically for this frame and should slide in place as shown | Yes             | .28mm        | 150mm/s    |
-| <img width="200px"  src="images/image12.jpeg"/>                                             | *kTake better photo* Acts to extend the head of a 5mm bolt ```A small hole must be drilled in the frame for the bolt to pass through```                                                             | No              | .28mm        | 150mm/s    |
+| <img width="200px"  src="images/image12.jpeg"/>                                             | *Take better photo* Acts to extend the head of a 5mm bolt <br>```Before installing drill an approximately 6 mm hole in the middle of the front facing crossbar and shown in the introductory photo```                                                             | No              | .28mm        | 150mm/s    |
 
 
 ### Construction 
@@ -100,7 +100,7 @@ This drops the batteries 7V to a useable 5V. In order to use this with the Jetso
 
    ```If spare header pins are not available, These can be soldered directly to the board but I find it very convenient to be able to move dangling parts as the design changes.```
 
-   In order to actually connect the convertor to power you'll need to tap into wire somewhere. And our particular case we have an adapter that connects the dean connecter of the battery to the ______ connector for the ESC. By thinly soldering two cables to the output of that adapter it remains usable but also allows us to connect to the header pins we connected earlier.
+   In order to actually connect the convertor to power you'll need to tap into wire somewhere. And our particular case we have an adapter that connects the dean connecter of the battery to the XLC connector for the ESC. By thinly soldering two cables to the output of that adapter it remains usable but also allows us to connect to the header pins we connected earlier.
 
 ```A small dab of hot glue at the end of the head can stop the wires from moving around. There's no need to add as much as I did, it makes it harder to plug in```
 
@@ -129,6 +129,7 @@ Connect two of the wires to power. and two of the wires to ground. Connect one w
 
 <img width="200px"  src="images/slide1.jpg" alt="Wiring Diagram"/>
 Take the 2 L shaped pieces you 3D printed earlier And place them into the groves next to the battery as shown above. The pieces will only slide in smoothly when in their correct position
+
 ## Software Setup
 
 ### General
@@ -138,7 +139,7 @@ Take the 2 L shaped pieces you 3D printed earlier And place them into the groves
 
 ```sudo apt-get install git```
 
-* In order to properly use the real sense cameras you'll need to install the drivers for them seperately. luckily this process has ben mostly automated here.
+* In order to properly use the real sense cameras you'll need to install the drivers for them seperately. Luckily this process has ben mostly automated by the JetsonHacksNano Repo.
 
 ### ROS
 
@@ -184,14 +185,8 @@ A tutorial on how to make a ROS workspace can be found [here](http://wiki.ros.or
 
 ### OR
 
-* After plugging in your Arduino, run ```ls /dev/tty*``` to find which port your arduino is attached on.
-* cd into [arduino/](arduino/) and run ```ino build; ino upload -p ${port}```. This uploads the script to your arduino board.
 * Connect the ```SteeringControlPin```(Pin 9 by default) to the control line for the steering servo.
 * Connect the ```ThrottleControlPin```(Pin 12 by default) to the control line for the blue ESC.
-
-### Bluetooth
-
-Just install the Joy Bluetooth Commander from the play store and pair to the HC-06 device within the app by moving the joystick.
 
 ## Startup
 
