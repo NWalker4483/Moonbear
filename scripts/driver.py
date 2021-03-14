@@ -39,7 +39,7 @@ if __name__ == '__main__':
     rospy.Subscriber(odom_topic, Odometry, odom_callback, queue_size=1)
     rospy.Subscriber(twist_cmd_topic, Twist, cmd_callback, queue_size=1)
 
-    ser = serial.Serial('/dev/ttyACM0')
+    ser = serial.Serial('/dev/ttyUSB0')
     rospy.spin()
 
   except rospy.ROSInterruptException:
