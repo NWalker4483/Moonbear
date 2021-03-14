@@ -5,9 +5,9 @@ echo  'SUBSYSTEM=="tty",DRIVERS=="usb", ATTRS{idVendor}=="0483", ATTRS{idProduct
 
 echo  'SUBSYSTEM=="tty",DRIVERS=="usb", ATTRS{idVendor}=="067b", ATTRS{idProduct}=="2303", MODE:="0666", GROUP:="dialout",  SYMLINK+="ydlidar"' >/etc/udev/rules.d/ydlidar-2303.rules
 
-echo  'SUBSYSTEM=="tty",ATTRS{idVendor}=="2341", ATTRS{idProduct}=="0042",  SYMLINK+="arduino_mega"' >/etc/udev/rules.d/arduino.rules
+echo  'SUBSYSTEM=="tty",ATTRS{idVendor}=="1a86", ATTRS{idProduct}=="7523",  SYMLINK+="arduino_nano"' >/etc/udev/rules.d/arduino.rules
 
-sudo chmod 777 ~/../../dev/arduino_mega
+sudo chmod 777 ~/../../dev/arduino_nano
 sudo adduser $USER dialout
 
 service udev reload
