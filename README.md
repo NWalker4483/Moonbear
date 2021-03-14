@@ -3,7 +3,7 @@
 <img width="200px"  src="images/image1.jpg"/>
 
 # Morgan State University’s School of Engineering
-## MSU RACECAR V1
+## MSU RACECAR: MEDIUM-BOY
 
 <img width="200px"  src="images/image4.png"/>
 <img width="200px"  src="images/image7.png"/>
@@ -136,38 +136,19 @@ Take the 2 L shaped pieces you 3D printed earlier And place them into the groves
 * Install Ubuntu on the Jetson Nano. https://developer.nvidia.com/embedded/learn/get-started-jetson-Nano-devkit
 * Install general dependancies...
 
-```sudo apt-get install git arduino```
+```sudo apt-get install git```
 
 * In order to properly use the real sense cameras you'll need to install the drivers for them seperately. luckily this process has ben mostly automated here.
 
 ### ROS
 
-* Installing ROS melodic with one of the methods below.
-
-#### Method 1
-
-* Follow the instructions to install ROS Melodic Desktop. http://wiki.ros.org/melodic/Installation/Ubuntu
-
-#### Method 2
-
-* Install from the JetsonHacksNano repo. https://github.com/JetsonHacksNano/installROS
+* Install ROS melodic from the [JetsonHacksNano repo.](https://github.com/JetsonHacksNano/installROS)
 
 ```Only the base version is necessary but if you would like to use the GUI tools like rviz in my experience they will run fine.```
 
-Once ROS is installed. Install these ROS package dependencies
+Once ROS is installed. Install the ROS dependencies with
 
-``` sudo apt-get install \
-ros-melodic-realsense2-camera \
-ros-melodic-joy \
-ros-melodic-joy-teleop-twist \
-ros-melodic-rosserial-arduino \
-ros-melodic-rosserial \
-ros-melodic-slam-gmapping \
-ros-melodic-amcl \
-ros-melodic-move-base \
-ros-melodic-teb-local-planner \
-ros-melodic-robot-upstart \
-ros-melodic-pointcloud-to-laserscan
+``` 
 ```
 
 ```Librealsense is necessary for using the **realsense2-camera** package. Some of the documentation says that it is installed by default but that hasn't worked in my case so I recommend you follow this [tutorial](https://github.com/IntelRealSense/librealsense) to install it separately.```
@@ -182,11 +163,6 @@ A tutorial on how to make a ROS workspace can be found [here](http://wiki.ros.or
 * cd into [arduino/](arduino/) and run ```ino build; ino upload -p ${port}```. This uploads the script to your arduino board.
 * Connect the ```SteeringControlPin```(Pin 9 by default) to the control line for the steering servo.
 * Connect the ```ThrottleControlPin```(Pin 12 by default) to the control line for the blue ESC.
-
-### Bluetooth
-
-Just install the Joy Bluetooth Commander from the play store and pair to the HC-06 device within the app by moving the joystick.
-
 ## Startup
 
 For either mode it's necessary to power the computer since there is no on or off switch manually plugging and unplugging the RC battery cable is the best way to go about turning the system on and off.

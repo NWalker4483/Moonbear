@@ -18,11 +18,10 @@ def pid_callback(data):
   ser.write(str.encode(cmd_str)) 
   rospy.loginfo(cmd_str)
 
-
 def cmd_callback(data):
   global set_pub
   global steering_angle
-  steering_angle = int(90 + (data.angular.z * (180/3.14)))
+  steering_angle = int(90 + (data.angular.z * (180/3.14))) # radians to degrees
   set_pub.publish(data.linear.x)
 
 if __name__ == '__main__': 
@@ -39,7 +38,7 @@ if __name__ == '__main__':
     rospy.Subscriber(odom_topic, Odometry, odom_callback, queue_size=1)
     rospy.Subscriber(twist_cmd_topic, Twist, cmd_callback, queue_size=1)
 
-    ser = serial.Serial('/dev/ttyACM0')
+    ser = serial.Serial('/dev/ttyUSB0')
     rospy.spin()
 
   except rospy.ROSInterruptException:
